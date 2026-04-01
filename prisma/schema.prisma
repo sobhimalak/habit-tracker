@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  passwordHash  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  habits        Habit[]
+}
+
+model Habit {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String?
+  color       String?
+  type        String      @default("daily") // daily, challenge
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  logs        HabitLog[]
+  challenges  Challenge[]
+}
+
+model HabitLog {
+  id            String   @id @default(cuid())
+  habitId       String
+  habit         Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  date          String   // Format: YYYY-MM-DD
+  completed     Boolean
+  notes         String?
+  timeCompleted String?
+  missedReason  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([habitId, date])
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  habitId     String
+  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  title       String
+  goalDays    Int
+  startDate   String   // Format: YYYY-MM-DD
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
