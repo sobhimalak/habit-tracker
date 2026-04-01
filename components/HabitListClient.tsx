@@ -7,6 +7,8 @@ import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle } 
 type Habit = {
   id: string;
   name: string;
+  icon?: string;
+  color?: string;
   streak: number;
   goalValue: number;
   goalUnit: string;
@@ -36,7 +38,7 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
   const [timeCompleted, setTimeCompleted] = useState("");
   const [missedReason, setMissedReason] = useState("");
  
-  const toggleHabit = async (habitId: string, completed: boolean) => {
+  const toggleHabit = async (habitId: string, completed: boolean, reasonFlag?: string) => {
     setLoadingId(habitId);
     try {
       const res = await fetch("/api/logs", {
@@ -46,6 +48,7 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
           habitId,
           date: dateStr,
           completed,
+          missedReason: reasonFlag || "",
         }),
       });
  
@@ -91,18 +94,24 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
   return (
     <div className="space-y-6">
       {habits.map((habit) => {
-        const isCompleted = habit.todayLog?.completed === true;
-        const isMissed = habit.todayLog?.completed === false;
+        const isCompleted  = habit.todayLog?.completed === true;
+        const isRest        = habit.todayLog?.completed === false && habit.todayLog?.missedReason === "REST";
+        const isMissed      = habit.todayLog?.completed === false && habit.todayLog?.missedReason !== "REST";
         
         return (
           <div key={habit.id} className="relative group animate-slide-up">
-            <div className={`premium-card p-5 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl transition-all ${isCompleted ? 'border-emerald-500/30' : isMissed ? 'border-rose-500/30' : ''}`}>
+            <div className={`premium-card p-5 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl transition-all ${
+              isCompleted ? 'border-emerald-500/30' : isMissed ? 'border-rose-500/30' : isRest ? 'border-blue-500/30' : ''
+            }`}>
               {/* Top row: name + streak + chevron */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
+                    {habit.icon && (
+                      <span className="text-xl shrink-0">{habit.icon}</span>
+                    )}
                     <h4 className={`text-base font-black italic tracking-tight transition-colors ${
-                      isCompleted ? 'text-emerald-500' : isMissed ? 'text-rose-500' : 'text-white'
+                      isCompleted ? 'text-emerald-500' : isMissed ? 'text-rose-500' : isRest ? 'text-blue-400' : 'text-white'
                     }`}>{habit.name}</h4>
                     {habit.streak > 0 && (
                       <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase text-emerald-500 tracking-widest italic shrink-0">
@@ -136,15 +145,26 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                   <ChevronRight size={18} />
                 </button>
               </div>
-              {/* Bottom row: MISS + DONE buttons full width */}
-              <div className="flex gap-3">
+              {/* Bottom row: REST + MISS + DONE */}
+              <div className="flex gap-2 mt-3">
+                <button
+                  disabled={loadingId === habit.id}
+                  onClick={() => toggleHabit(habit.id, false, "REST")}
+                  className={`flex-1 h-8 rounded-xl flex items-center justify-center text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 ${
+                    isRest
+                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
+                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
+                  }`}
+                >
+                  REST
+                </button>
                 <button
                   disabled={loadingId === habit.id}
                   onClick={() => toggleHabit(habit.id, false)}
-                  className={`flex-1 h-11 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 h-8 rounded-xl flex items-center justify-center text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 ${
                     isMissed
                       ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
-                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800 active:scale-95'
+                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
                   }`}
                 >
                   MISS
@@ -152,10 +172,10 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                 <button
                   disabled={loadingId === habit.id}
                   onClick={() => toggleHabit(habit.id, true)}
-                  className={`flex-1 h-11 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 h-8 rounded-xl flex items-center justify-center text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 ${
                     isCompleted
                       ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800 active:scale-95'
+                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
                   }`}
                 >
                   DONE

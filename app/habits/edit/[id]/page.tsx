@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, X, Trash2 } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 
 export default function EditHabit() {
   const router = useRouter();
@@ -12,18 +12,21 @@ export default function EditHabit() {
   const [color, setColor] = useState("#10b981");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const SUGGESTED_ICONS = ["✨", "🏃", "💧", "📖", "🧘", "💪", "🍎", "💤", "💻", "🎵", "💰", "🎨"];
-  const COLORS = ["#10b981", "#3b82f6", "#8b5cf6", "#f43f5e", "#f59e0b", "#06b6d4"];
+  const ICONS  = ["✨", "🏃", "💧", "📖", "🧘", "💪", "🍎", "💤", "💻", "🎵", "💰", "🎨"];
+  const COLORS = ["#71717a", "#ef4444", "#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#06b6d4"];
 
   useEffect(() => {
     const fetchHabit = async () => {
       const res = await fetch(`/api/habits/${params.id}`);
       if (res.ok) {
         const data = await res.json();
-        setName(data.name);
-        setIcon(data.icon);
-        setColor(data.color);
+        setName(data.name   ?? "");
+        setIcon(data.icon   ?? "✨");
+        setColor(data.color ?? "#10b981");
+      } else {
+        setError("Failed to load habit.");
       }
       setLoading(false);
     };
@@ -32,56 +35,69 @@ export default function EditHabit() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
     setSaving(true);
     const res = await fetch(`/api/habits/${params.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, icon, color }),
+      body: JSON.stringify({ name: name.trim(), icon, color }),
     });
 
     if (res.ok) {
       router.push("/habits");
       router.refresh();
+    } else {
+      setError("Failed to save changes.");
     }
     setSaving(false);
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center text-muted-foreground font-bold">Loading...</div>;
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-zinc-950 text-zinc-500 font-black italic text-xs uppercase tracking-widest">
+      Loading...
+    </div>
+  );
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-32">
-      <header className="px-6 pt-12 pb-4 flex items-center justify-between">
-        <button onClick={() => router.back()} className="w-10 h-10 flex items-center justify-start text-muted-foreground">
-          <ChevronLeft size={24} />
+    <form onSubmit={handleSubmit} className="flex flex-col min-h-screen bg-zinc-950 px-8 py-12 animate-slide-up max-w-md mx-auto w-full">
+      <header className="flex items-center justify-between mb-12">
+        <button type="button" onClick={() => router.back()} className="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <ChevronLeft size={28} />
         </button>
-        <h1 className="text-xl font-bold tracking-tight">Edit Habit</h1>
-        <button onClick={() => router.push("/habits")} className="w-10 h-10 flex items-center justify-end text-muted-foreground">
-          <X size={24} />
+        <h1 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 italic">Edit Habit</h1>
+        <button type="button" onClick={() => router.push("/habits")} className="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <X size={22} />
         </button>
       </header>
 
-      <form onSubmit={handleSubmit} className="px-6 py-4 space-y-8">
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-1">Habit Name</label>
+      <main className="flex-1 space-y-10">
+        {/* Name */}
+        <div className="space-y-3">
+          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Habit Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-[#18181b] border border-[#27272a] rounded-2xl px-6 py-4 focus:outline-none focus:border-primary transition-colors h-16 font-bold text-lg"
+            placeholder="e.g. Go for a run..."
+            className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500 transition-all text-white font-medium"
             required
+            autoFocus
           />
         </div>
 
-        <div className="space-y-4">
-          <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest ml-1">Choose Icon</label>
-          <div className="grid grid-cols-5 gap-3">
-            {SUGGESTED_ICONS.map((i) => (
+        {/* Icon */}
+        <div className="space-y-4 pt-4 border-t border-zinc-900">
+          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Icon</label>
+          <div className="flex flex-wrap gap-3">
+            {ICONS.map(i => (
               <button
                 key={i}
                 type="button"
                 onClick={() => setIcon(i)}
-                className={`aspect-square rounded-2xl flex items-center justify-center text-2xl transition-all ${
-                  icon === i ? "bg-foreground text-background scale-110 shadow-lg" : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all ${
+                  icon === i
+                    ? "bg-emerald-500 scale-110 shadow-lg shadow-emerald-500/20"
+                    : "bg-zinc-900 border border-zinc-800 hover:border-zinc-700"
                 }`}
               >
                 {i}
@@ -90,16 +106,38 @@ export default function EditHabit() {
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent max-w-md mx-auto">
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full bg-foreground text-background font-black text-xl h-16 rounded-2xl active:scale-[0.98] transition-all shadow-xl"
-          >
-            {saving ? "..." : "Save Changes"}
-          </button>
+        {/* Color */}
+        <div className="space-y-4 pt-4 border-t border-zinc-900">
+          <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Color</label>
+          <div className="flex flex-wrap gap-4">
+            {COLORS.map(c => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setColor(c)}
+                className={`w-8 h-8 rounded-full transition-all ${
+                  color === c
+                    ? "ring-2 ring-white ring-offset-4 ring-offset-zinc-950 scale-110"
+                    : "opacity-60 hover:opacity-100 hover:scale-110"
+                }`}
+                style={{ backgroundColor: c }}
+              />
+            ))}
+          </div>
         </div>
-      </form>
-    </div>
+
+        {error && <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest italic">{error}</p>}
+      </main>
+
+      <div className="pt-8">
+        <button
+          type="submit"
+          disabled={saving || !name.trim()}
+          className="w-full bg-emerald-500 text-white font-black text-sm h-14 rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 shadow-xl shadow-emerald-500/20"
+        >
+          {saving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
+    </form>
   );
 }

@@ -47,6 +47,8 @@ export default async function Home() {
     return {
       ...habit,
       streak: habit.logs?.length || 0,
+      icon: habit.icon || "✨",
+      color: habit.color || "#10b981",
       goalValue: habit.goalValue || 1,
       goalUnit: habit.goalUnit || "times",
       reminderTime: habit.reminderTime || undefined,
