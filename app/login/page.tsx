@@ -55,13 +55,6 @@ export default function Login() {
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 py-16 animate-slide-up max-w-md mx-auto w-full">
       <header className="flex-1 flex flex-col items-center justify-center space-y-8">
         {/* Signature H Logo */}
-        <div className="relative group">
-          <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full scale-150 animate-pulse" />
-          <div className="relative w-28 h-28 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] flex items-center justify-center shadow-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-            <span className="text-6xl font-black italic text-white tracking-tighter z-10">H</span>
-          </div>
-        </div>
         
         <div className="space-y-2 text-center">
           <h1 className="text-4xl font-black tracking-tighter italic text-white">Habitify</h1>
