@@ -96,56 +96,69 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
         
         return (
           <div key={habit.id} className="relative group animate-slide-up">
-            <div className={`premium-card flex items-center justify-between p-6 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl transition-all ${isCompleted ? 'border-emerald-500/30' : (isMissed ? 'border-rose-500/30' : '')}`}>
-              <div className="flex flex-col space-y-2">
-                 <div className="flex items-center space-x-3">
-                    <h4 className={`text-lg font-black italic tracking-tight transition-colors ${isCompleted ? 'text-emerald-500' : 'text-white'}`}>{habit.name}</h4>
+            <div className={`premium-card p-5 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl transition-all ${isCompleted ? 'border-emerald-500/30' : isMissed ? 'border-rose-500/30' : ''}`}>
+              {/* Top row: name + streak + chevron */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h4 className={`text-base font-black italic tracking-tight transition-colors ${
+                      isCompleted ? 'text-emerald-500' : isMissed ? 'text-rose-500' : 'text-white'
+                    }`}>{habit.name}</h4>
                     {habit.streak > 0 && (
-                       <span className="flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase text-emerald-500 tracking-widest italic">
-                          <Zap size={8} className="animate-pulse" />
-                          <span>STREAK {habit.streak}</span>
-                       </span>
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase text-emerald-500 tracking-widest italic shrink-0">
+                        <Zap size={8} className="animate-pulse" />
+                        STREAK {habit.streak}
+                      </span>
                     )}
-                 </div>
-                 <div className="flex items-center space-x-3 text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">
-                    <span className="flex items-center space-x-1">
-                       <Target size={10} />
-                       <span>Goal: {habit.goalValue} {habit.goalUnit}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">
+                    <span className="flex items-center gap-1">
+                      <Target size={10} />
+                      Goal: {habit.goalValue} {habit.goalUnit}
                     </span>
                     {habit.reminderTime && (
-                       <span className="flex items-center space-x-1">
-                          <Clock size={10} />
-                          <span>{habit.reminderTime}</span>
-                       </span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={10} />
+                        {habit.reminderTime}
+                      </span>
                     )}
-                 </div>
-              </div>
- 
-              <div className="flex items-center space-x-3">
+                  </div>
+                </div>
                 <button
-                  disabled={loadingId === habit.id}
-                  onClick={() => toggleHabit(habit.id, false)}
-                  className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isMissed ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
-                >
-                  MISS
-                </button>
-                <button
-                  disabled={loadingId === habit.id}
-                  onClick={() => toggleHabit(habit.id, true)}
-                  className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isCompleted ? 'bg-emerald-500 text-white border-emerald-400 shadow-lg shadow-emerald-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
-                >
-                  DONE
-                </button>
-                <button 
                   onClick={() => {
                     setSelectedHabitId(habit.id);
                     setNotes(habit.todayLog?.notes || "");
                     setTimeCompleted(habit.todayLog?.timeCompleted || "");
                     setMissedReason(habit.todayLog?.missedReason || "");
                   }}
-                  className="w-10 h-12 flex items-center justify-center text-zinc-700 hover:text-zinc-500 transition-colors"
+                  className="w-8 h-8 flex items-center justify-center text-zinc-700 hover:text-zinc-500 transition-colors shrink-0 ml-2"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+              {/* Bottom row: MISS + DONE buttons full width */}
+              <div className="flex gap-3">
+                <button
+                  disabled={loadingId === habit.id}
+                  onClick={() => toggleHabit(habit.id, false)}
+                  className={`flex-1 h-11 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${
+                    isMissed
+                      ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
+                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800 active:scale-95'
+                  }`}
+                >
+                  MISS
+                </button>
+                <button
+                  disabled={loadingId === habit.id}
+                  onClick={() => toggleHabit(habit.id, true)}
+                  className={`flex-1 h-11 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${
+                    isCompleted
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                      : 'bg-zinc-900 text-zinc-500 border border-zinc-800 active:scale-95'
+                  }`}
+                >
+                  DONE
                 </button>
               </div>
             </div>

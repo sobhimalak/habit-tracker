@@ -2,7 +2,8 @@
  
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Plus, BarChart2, User } from "lucide-react";
+import { Home, Calendar, Plus, BarChart2, User } from "lucide-react";
+
  
 export default function BottomNav() {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function BottomNav() {
     { icon: Home, path: "/", label: "Today" },
     { icon: BarChart2, path: "/stats", label: "Stats" },
     { icon: Plus, path: "/add", label: "Add", center: true },
+    { icon: Calendar, path: "/history", label: "History" },
     { icon: User, path: "/profile", label: "Profile" },
   ];
  
