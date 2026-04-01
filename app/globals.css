@@ -1,72 +1,84 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
-  --color-background: #09090b;
-  --color-foreground: #fafafa;
-  
-  --color-card: #18181b;
-  --color-card-foreground: #fafafa;
-  --color-card-border: #27272a;
-  
-  --color-primary: #10b981;
-  --color-primary-foreground: #022c22;
-  
-  --color-secondary: #27272a;
-  --color-secondary-foreground: #fafafa;
-  
-  --color-success: #10b981;
-  --color-destructive: #ef4444;
-  
-  --color-muted: #27272a;
-  --color-muted-foreground: #a1a1aa;
-}
-
-/* Global Styles */
 @layer base {
-  * {
-    border-color: #27272a;
+  :root {
+    --background: #09090b;
+    --foreground: #ffffff;
+    
+    --card: #111113;
+    --card-border: #1e1e21;
+    
+    --primary: #10b981;
+    --primary-dark: #059669;
+    
+    --accent: #f59e0b;
+    --danger: #f43f5e;
+    
+    --zinc-800: #27272a;
+    --zinc-900: #18181b;
+    --zinc-950: #09090b;
   }
-  body, html {
-    background-color: #09090b;
-    color: #fafafa;
-    touch-action: manipulation;
+
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] font-sans antialiased selection:bg-primary/30;
     -webkit-tap-highlight-color: transparent;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    min-height: 100vh;
   }
 }
 
-/* Wireframe-accurate card styles */
-.premium-card {
-  background-color: transparent;
-  border: 1px solid #27272a;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  transition: all 0.15s ease;
+/* Premium Component Utilities */
+@layer components {
+  .premium-card {
+    @apply bg-card border border-card-border rounded-2xl p-4 shadow-xl shadow-black/20 transition-all duration-200 active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply w-full h-12 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/10 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center;
+  }
+
+  .btn-secondary {
+    @apply w-full h-12 bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-foreground font-medium rounded-xl transition-all active:scale-[0.98] flex items-center justify-center;
+  }
+
+  .btn-destructive {
+    @apply w-full h-12 bg-danger/10 border border-danger/20 hover:bg-danger text-danger hover:text-white font-bold rounded-xl transition-all active:scale-[0.98] flex items-center justify-center;
+  }
+
+  .input-premium {
+    @apply w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-primary/50 transition-all h-12 text-foreground placeholder:text-zinc-600;
+  }
+
+  .toggle-btn-yes {
+    @apply px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all;
+    @apply bg-zinc-900 text-zinc-500 border border-zinc-800;
+  }
+  .toggle-btn-yes.active {
+    @apply bg-primary text-white border-primary shadow-lg shadow-primary/20;
+  }
+
+  .toggle-btn-no {
+    @apply px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all;
+    @apply bg-zinc-900 text-zinc-500 border border-zinc-800;
+  }
+  .toggle-btn-no.active {
+    @apply bg-danger text-white border-danger shadow-lg shadow-danger/20;
+  }
+
+  .nav-item {
+    @apply flex flex-col items-center justify-center gap-1 text-zinc-500 transition-all;
+  }
+  .nav-item.active {
+    @apply text-primary;
+  }
 }
 
-.premium-card:active {
-  background-color: #18181b;
+/* Animations */
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* Wireframe button styles */
-.btn-primary {
-  background-color: #71717a;
-  color: white;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  height: 3rem;
-  width: 100%;
-}
-
-.btn-secondary {
-  background-color: transparent;
-  border: 1px solid #71717a;
-  color: #fafafa;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  height: 3rem;
-  width: 100%;
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }

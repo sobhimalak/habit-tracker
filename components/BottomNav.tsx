@@ -1,62 +1,51 @@
 "use client";
-
-import { Home, ListTodo, PlusCircle, Calendar, BarChart2 } from "lucide-react";
+ 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-
+import { Home, Calendar, Plus, BarChart2, User } from "lucide-react";
+ 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { data: session } = useSession();
-
-  if (!session) return null;
-
-  const hideOn = ["/login", "/add", "/habits/edit", "/challenges/edit"];
-  if (hideOn.some(path => pathname.startsWith(path))) return null;
-
+ 
   const navItems = [
-    { href: "/", icon: Home, label: "Today" },
-    { href: "/habits", icon: ListTodo, label: "Habits" },
-    { href: "/add", icon: PlusCircle, label: "Add", main: true },
-    { href: "/stats", icon: BarChart2, label: "Stats" },
-    { href: "/history", icon: Calendar, label: "History" },
+    { icon: Home, path: "/", label: "Today" },
+    { icon: BarChart2, path: "/stats", label: "Stats" },
+    { icon: Plus, path: "/add", label: "Add", center: true },
+    { icon: Calendar, path: "/history", label: "History" },
+    { icon: User, path: "/profile", label: "Profile" },
   ];
-
+ 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#18181b]/90 backdrop-blur-md border-t border-[#27272a] z-50">
-      <div className="flex justify-around items-center h-20 px-2 pb-safe">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
-          const Icon = item.icon;
-          
-          if (item.main) {
-            return (
-              <Link key={item.href} href={item.href} className="relative -top-5">
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/25 active:scale-95 transition-transform">
-                  <Icon size={28} className="text-primary-foreground" />
-                </div>
-              </Link>
-            );
-          }
-
+    <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-zinc-900/60 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 flex items-center justify-between px-6 pointer-events-auto">
+      {navItems.map((item) => {
+        const isActive = pathname === item.path;
+        const Icon = item.icon;
+ 
+        if (item.center) {
           return (
             <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-col items-center justify-center w-16 h-full space-y-1 active:scale-95 transition-transform"
+              key={item.path}
+              href="/add"
+              className="relative -top-8 w-16 h-16 bg-emerald-500 rounded-[2rem] flex items-center justify-center shadow-[0_10px_20px_rgba(16,185,129,0.3)] border-4 border-zinc-950 active:scale-90 transition-all hover:bg-emerald-400 group"
             >
-              <Icon 
-                size={24} 
-                className={isActive ? "text-primary" : "text-muted-foreground"} 
-                strokeWidth={isActive ? 2.5 : 2}
-              />
-              <span className={`text-[10px] font-medium ${isActive ? "text-primary" : "text-muted-foreground"}`}>
-                {item.label}
-              </span>
+              <Plus size={32} className="text-white group-hover:rotate-90 transition-transform duration-300" />
             </Link>
           );
-        })}
-      </div>
+        }
+ 
+        return (
+          <Link
+            key={item.path}
+            href={item.path}
+            className={`flex flex-col items-center justify-center space-y-1 transition-all ${
+              isActive ? "text-emerald-500" : "text-zinc-600 hover:text-zinc-400"
+            }`}
+          >
+            <Icon size={22} className={isActive ? "scale-110" : ""} />
+            <span className="text-[8px] font-black uppercase tracking-widest italic">{item.label}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }

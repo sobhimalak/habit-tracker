@@ -27,11 +27,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-background text-foreground antialiased`}>
+      <body className={`${inter.className} bg-zinc-950 text-foreground antialiased selection:bg-emerald-500/30`}>
         <AuthProvider>
           <div className="flex justify-center min-h-screen">
-            <main className="w-full max-w-md bg-background px-6">
+            <main className="w-full max-w-md bg-zinc-950 relative">
               {children}
+              <BottomNav />
             </main>
             <SidebarMenu />
           </div>

@@ -1,22 +1,42 @@
 "use client";
-
+ 
 import { useState } from "react";
-import { Check, X, MessageSquare, Clock, AlertCircle, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-type Habit = any;
-
-export default function HabitListClient({ habits: initialHabits, dateStr }: { habits: Habit[], dateStr: string }) {
+import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle } from "lucide-react";
+ 
+type Habit = {
+  id: string;
+  name: string;
+  streak: number;
+  goalValue: number;
+  goalUnit: string;
+  reminderTime?: string;
+  todayLog?: {
+    completed: boolean;
+    notes?: string;
+    timeCompleted?: string;
+    missedReason?: string;
+  } | null;
+};
+ 
+interface HabitListClientProps {
+  habits: Habit[];
+  dateStr: string;
+}
+ 
+export default function HabitListClient({ habits: initialHabits, dateStr }: HabitListClientProps) {
   const router = useRouter();
-  const [habits, setHabits] = useState<Habit[]>(initialHabits);
+  const [habits, setHabits] = useState(initialHabits);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  
   const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null);
+  const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null); // For the log detail view
+ 
+  // Detailed log states
   const [notes, setNotes] = useState("");
-  const [missedReason, setMissedReason] = useState("");
   const [timeCompleted, setTimeCompleted] = useState("");
-
-  const handleLog = async (habitId: string, completed: boolean) => {
+  const [missedReason, setMissedReason] = useState("");
+ 
+  const toggleHabit = async (habitId: string, completed: boolean) => {
     setLoadingId(habitId);
     try {
       const res = await fetch("/api/logs", {
@@ -26,10 +46,9 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: { ha
           habitId,
           date: dateStr,
           completed,
-          timeCompleted: completed ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : null
         }),
       });
-      
+ 
       if (res.ok) {
         const updatedLog = await res.json();
         setHabits(habits.map(h => 
@@ -40,170 +59,157 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: { ha
       setLoadingId(null);
     }
   };
-
+ 
   const handleSaveDetails = async (habitId: string) => {
     setLoadingId(habitId);
     try {
-      const habit = habits.find(h => h.id === habitId);
-      const isCompleted = habit?.todayLog?.completed ?? false;
-      
       const res = await fetch("/api/logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           habitId,
           date: dateStr,
-          completed: isCompleted,
+          completed: habits.find(h => h.id === habitId)?.todayLog?.completed ?? true,
           notes,
-          timeCompleted: isCompleted ? timeCompleted : undefined,
-          missedReason: !isCompleted ? missedReason : undefined
+          timeCompleted,
+          missedReason,
         }),
       });
-      
+ 
       if (res.ok) {
         const updatedLog = await res.json();
         setHabits(habits.map(h => 
           h.id === habitId ? { ...h, todayLog: updatedLog } : h
         ));
-        setExpandedHabitId(null);
+        setSelectedHabitId(null);
       }
     } finally {
       setLoadingId(null);
     }
   };
-
-  const openDetails = (habit: Habit) => {
-    setExpandedHabitId(habit.id);
-    setNotes(habit.todayLog?.notes || "");
-    setMissedReason(habit.todayLog?.missedReason || "");
-    setTimeCompleted(habit.todayLog?.timeCompleted || "");
-  };
-
+ 
   return (
-    <div className="space-y-6 pb-20">
-      <div className="space-y-4">
-        {habits.map((habit) => {
-          const isCompleted = habit.todayLog?.completed === true;
-          const isMissed = habit.todayLog?.completed === false;
-          const currentHabitLoading = loadingId === habit.id;
-
-          return (
-            <div key={habit.id} className="premium-card space-y-4 mb-4 border border-zinc-800 rounded-xl p-4">
-              <div className="flex items-center space-x-3">
-                <span className="text-xl">{habit.icon || "✨"}</span>
-                <h3 className="font-bold text-lg">{habit.name}</h3>
+    <div className="space-y-6">
+      {habits.map((habit) => {
+        const isCompleted = habit.todayLog?.completed === true;
+        const isMissed = habit.todayLog?.completed === false;
+        
+        return (
+          <div key={habit.id} className="relative group animate-slide-up">
+            <div className={`premium-card flex items-center justify-between p-6 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl transition-all ${isCompleted ? 'border-emerald-500/30' : (isMissed ? 'border-rose-500/30' : '')}`}>
+              <div className="flex flex-col space-y-2">
+                 <div className="flex items-center space-x-3">
+                    <h4 className={`text-lg font-black italic tracking-tight transition-colors ${isCompleted ? 'text-emerald-500' : 'text-white'}`}>{habit.name}</h4>
+                    {habit.streak > 0 && (
+                       <span className="flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[8px] font-black uppercase text-emerald-500 tracking-widest italic">
+                          <Zap size={8} className="animate-pulse" />
+                          <span>STREAK {habit.streak}</span>
+                       </span>
+                    )}
+                 </div>
+                 <div className="flex items-center space-x-3 text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">
+                    <span className="flex items-center space-x-1">
+                       <Target size={10} />
+                       <span>Goal: {habit.goalValue} {habit.goalUnit}</span>
+                    </span>
+                    {habit.reminderTime && (
+                       <span className="flex items-center space-x-1">
+                          <Clock size={10} />
+                          <span>{habit.reminderTime}</span>
+                       </span>
+                    )}
+                 </div>
               </div>
-              
-              <div className="flex space-x-3">
+ 
+              <div className="flex items-center space-x-3">
                 <button
-                  disabled={currentHabitLoading}
-                  onClick={() => handleLog(habit.id, true)}
-                  className={`flex-1 h-12 rounded-lg font-bold transition-all ${
-                    isCompleted ? "bg-[#71717a] text-white" : "bg-[#27272a] text-zinc-400"
-                  }`}
+                  disabled={loadingId === habit.id}
+                  onClick={() => toggleHabit(habit.id, false)}
+                  className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isMissed ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
                 >
-                  Yes
+                  NO
                 </button>
                 <button
-                  disabled={currentHabitLoading}
-                  onClick={() => {
-                    openDetails(habit);
-                  }}
-                  className={`flex-1 h-12 rounded-lg font-bold transition-all ${
-                    isMissed ? "bg-[#71717a] text-white" : "bg-[#27272a] text-zinc-400"
-                  }`}
+                  disabled={loadingId === habit.id}
+                  onClick={() => toggleHabit(habit.id, true)}
+                  className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isCompleted ? 'bg-emerald-500 text-white border-emerald-400 shadow-lg shadow-emerald-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
                 >
-                  No
+                  YES
+                </button>
+                <button 
+                  onClick={() => {
+                    setSelectedHabitId(habit.id);
+                    setNotes(habit.todayLog?.notes || "");
+                    setTimeCompleted(habit.todayLog?.timeCompleted || "");
+                    setMissedReason(habit.todayLog?.missedReason || "");
+                  }}
+                  className="w-10 h-12 flex items-center justify-center text-zinc-700 hover:text-zinc-500 transition-colors"
+                >
+                  <ChevronRight size={20} />
                 </button>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      <div className="pt-4">
-        <button 
-          className="w-full h-14 bg-secondary text-foreground font-bold rounded-2xl active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
-          onClick={() => {
-            const firstActive = habits.find(h => h.todayLog !== null);
-            if (firstActive) openDetails(firstActive);
-          }}
-        >
-          <span>Add Note</span>
-        </button>
-      </div>
-
-      {expandedHabitId && (
-        <div className="fixed inset-0 z-[100] flex flex-col justify-end bg-black/80 backdrop-blur-sm">
-          <div className="bg-background w-full max-w-md mx-auto rounded-t-[2rem] p-8 pb-12 shadow-2xl border-t border-zinc-800">
-            <header className="flex justify-between items-center mb-8">
-              <button 
-                onClick={() => setExpandedHabitId(null)}
-                className="text-muted-foreground"
-              >
+          </div>
+        );
+      })}
+ 
+      {/* Log Detail Modal (Screen 6) */}
+      {selectedHabitId && (
+        <div className="fixed inset-0 z-[200] flex flex-col justify-end bg-black/80 backdrop-blur-md p-6">
+          <div className="bg-zinc-950 w-full max-w-md mx-auto rounded-[3rem] p-10 pb-12 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] border border-zinc-800/50 animate-slide-up">
+            <header className="flex justify-between items-center mb-10">
+              <button onClick={() => setSelectedHabitId(null)} className="text-zinc-600 hover:text-white transition-colors">
                 <ChevronLeft size={28} />
               </button>
-              <h3 className="text-xl font-bold">Log Your Day</h3>
-              <button 
-                onClick={() => setExpandedHabitId(null)}
-                className="text-muted-foreground"
-              >
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 italic">Entry Details</h3>
+              <button onClick={() => setSelectedHabitId(null)} className="text-zinc-600 hover:text-white transition-colors">
                 <X size={28} />
               </button>
             </header>
-
-            <div className="space-y-8">
-              <div>
-                <h4 className="text-2xl font-bold mb-4">{habits.find(h => h.id === expandedHabitId)?.name}</h4>
-                <p className="text-zinc-500 font-medium mb-4">Did you exercise?</p>
-                <div className="flex space-x-3">
-                  <div className={`flex-1 flex items-center justify-center h-12 rounded-lg font-bold transition-all ${habits.find(h => h.id === expandedHabitId)?.todayLog?.completed ? 'bg-[#71717a] text-white' : 'bg-[#27272a] text-zinc-500'}`}>Yes</div>
-                  <div className={`flex-1 flex items-center justify-center h-12 rounded-lg font-bold transition-all ${!habits.find(h => h.id === expandedHabitId)?.todayLog?.completed ? 'bg-[#71717a] text-white' : 'bg-[#27272a] text-zinc-500'}`}>No</div>
-                </div>
+ 
+            <div className="space-y-10">
+              <div className="space-y-2">
+                <h4 className="text-3xl font-black italic uppercase tracking-tighter text-white">
+                  {habits.find(h => h.id === selectedHabitId)?.name}
+                </h4>
+                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest italic animate-pulse">Update your progress</p>
               </div>
-
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Time Completed</label>
-                  <input 
-                    type="text" 
-                    value={timeCompleted}
-                    onChange={(e) => setTimeCompleted(e.target.value)}
-                    placeholder="e.g. 08:30"
-                    className="w-full bg-transparent border border-zinc-800 rounded-lg h-12 px-4 focus:outline-none focus:border-zinc-500"
-                  />
+ 
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] pl-1">Execution Time</label>
+                  <div className="relative group">
+                    <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-700" size={18} />
+                    <input 
+                      type="text" 
+                      value={timeCompleted}
+                      onChange={(e) => setTimeCompleted(e.target.value)}
+                      placeholder="e.g. 08:30"
+                      className="input-premium h-14 pl-12 bg-zinc-900/40 text-sm font-black italic"
+                    />
+                  </div>
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Missed Reason</label>
-                  <select
-                    value={missedReason}
-                    onChange={(e) => setMissedReason(e.target.value)}
-                    className="w-full bg-[#27272a] border-none rounded-lg h-12 px-4 focus:outline-none appearance-none font-bold"
-                  >
-                    <option value="">Select a reason</option>
-                    <option value="No time">No time</option>
-                    <option value="Forgot">Forgot</option>
-                    <option value="Tired">Tired</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Add Note (Optional)</label>
+ 
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] pl-1">Daily Notes</label>
                   <textarea 
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="w-full bg-transparent border border-zinc-800 rounded-lg p-4 focus:outline-none focus:border-zinc-500 h-24 resize-none"
+                    className="w-full bg-zinc-900/40 border border-zinc-800 rounded-3xl p-5 focus:outline-none focus:border-emerald-500/50 h-32 resize-none text-white text-sm font-black italic placeholder:text-zinc-800"
+                    placeholder="Reflect on today's discipline..."
                   />
                 </div>
               </div>
-
-              <button
-                onClick={() => handleSaveDetails(expandedHabitId!)}
-                className="btn-primary"
-              >
-                Save
-              </button>
+ 
+              <div className="pt-4">
+                <button
+                  disabled={loadingId === selectedHabitId}
+                  onClick={() => handleSaveDetails(selectedHabitId!)}
+                  className="btn-primary h-14 text-[12px] tracking-[0.2em] italic"
+                >
+                  {loadingId === selectedHabitId ? "..." : "CONFIRM LOG"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -211,4 +217,3 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: { ha
     </div>
   );
 }
-

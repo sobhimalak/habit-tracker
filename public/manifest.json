@@ -1,17 +1,33 @@
 {
-  "name": "Habit Tracker",
+  "name": "Habit Tracker Premium",
   "short_name": "Habits",
-  "description": "A premium mobile-first habit tracker",
+  "description": "A premium mobile-first habit tracker for high-performers",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
+  "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
       "src": "/icon",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Add Habit",
+      "url": "/add",
+      "description": "Quickly add a new habit"
     }
   ]
 }

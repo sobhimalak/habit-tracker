@@ -2,44 +2,58 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { Settings, Trash2, Power } from "lucide-react";
-import Link from "next/link";
 import HabitManagerClient from "@/components/HabitManagerClient";
-
-export default async function Habits() {
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+ 
+export default async function HabitsPage() {
   const session = await getServerSession(authOptions);
-
+ 
   if (!session) {
     redirect("/login");
   }
-
-  const habits = await prisma.habit.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
+ 
+  const rawHabits = await prisma.habit.findMany({
+    where: { 
+      userId: session.user.id,
+      isActive: true 
+    },
     include: {
-      challenges: true
+      logs: {
+        where: { completed: true },
+        take: 100 // for streak calculation
+      }
     }
   });
 
+  const habits = rawHabits.map(h => ({
+    id: h.id,
+    name: h.name,
+    streak: h.logs?.length || 0,
+    goalValue: h.goalValue || 1,
+    goalUnit: h.goalUnit || "times",
+    reminderTime: h.reminderTime || undefined,
+    icon: h.icon || "✨"
+  }));
+ 
   return (
-    <div className="p-4 pt-8">
-      <header className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">My Habits</h1>
-          <p className="text-muted-foreground mt-1">Manage your routines</p>
-        </div>
-        <Link href="/add" className="bg-secondary text-foreground px-4 py-2 rounded-xl text-sm font-medium active:scale-95 transition-transform">
-          + Add
+    <div className="flex flex-col min-h-screen bg-zinc-950 px-8 py-12 animate-slide-up pb-32 max-w-md mx-auto w-full">
+      <header className="flex items-center justify-between mb-16">
+        <Link href="/" className="text-zinc-500 hover:text-zinc-300 transition-colors">
+          <ChevronLeft size={28} />
         </Link>
+        <h1 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 italic">Manage Habits</h1>
+        <div className="w-7" />
       </header>
-      
-      <div className="space-y-4">
-        {habits.length === 0 ? (
-           <p className="text-muted-foreground text-center py-12">No habits found. Create one to get started.</p>
-        ) : (
-          <HabitManagerClient habits={habits} />
-        )}
-      </div>
+ 
+      <main className="flex-1 space-y-12">
+        <div className="space-y-4">
+          <h2 className="text-4xl font-black italic tracking-tighter text-white uppercase">Your Journey</h2>
+          <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] pl-1 italic">Active goals and streaks</p>
+        </div>
+ 
+        <HabitManagerClient habits={habits} />
+      </main>
     </div>
   );
 }

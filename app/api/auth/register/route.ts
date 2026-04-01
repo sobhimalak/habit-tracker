@@ -29,8 +29,17 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ user: { id: user.id, email: user.email, name: user.name } }, { status: 201 });
-  } catch (error) {
-    console.error("Registration error:", error);
-    return NextResponse.json({ message: "Failed to register" }, { status: 500 });
+  } catch (error: any) {
+    console.error("Registration error full details:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    });
+    return NextResponse.json({ 
+      message: "Registration failed", 
+      details: error.message,
+      code: error.code 
+    }, { status: 500 });
   }
 }
