@@ -19,10 +19,11 @@
     "incremental": true,
     "skipLibCheck": true,
     "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+        {
+          "name": "next"
+        }
+      ],
+      "types": ["node", "react", "react-dom"],
     "paths": {
       "@/*": [
         "./*"
