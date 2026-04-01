@@ -28,10 +28,9 @@ export default function ShareButton({ title }: ShareButtonProps) {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all border border-amber-500/20"
+      className="w-10 h-10 flex items-center justify-center rounded-2xl bg-zinc-900/50 text-amber-500 border border-white/5 active:scale-95 transition-all"
     >
       <Share2 size={18} />
-      <span className="text-sm font-medium">Share Progress</span>
     </button>
   );
 }

@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   themeColor: "#09090b",
 };
 
-import SidebarMenu from "@/components/SidebarMenu";
 
 export default function RootLayout({
   children,
@@ -34,7 +33,6 @@ export default function RootLayout({
               {children}
               <BottomNav />
             </main>
-            <SidebarMenu />
           </div>
         </AuthProvider>
       </body>

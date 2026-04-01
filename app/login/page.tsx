@@ -52,8 +52,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-950 px-8 py-16 animate-slide-up max-w-md mx-auto w-full">
-      <header className="flex-1 flex flex-col items-center justify-center space-y-8">
+    <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pt-8 pb-12 animate-slide-up max-w-md mx-auto w-full">
+      <header className="flex flex-col items-center justify-center space-y-4 mb-8">
         {/* Signature H Logo */}
         
         <div className="space-y-2 text-center">
@@ -62,8 +62,8 @@ export default function Login() {
         </div>
       </header>
 
-      <main className="w-full space-y-10 pb-12">
-        <div className="space-y-6">
+      <main className="w-full space-y-6 flex-1">
+        <div className="space-y-4">
           <div className="text-center space-y-1">
             <h2 className="text-xl font-bold tracking-tight text-white">{isLogin ? "Welcome Back" : "Create Account"}</h2>
             <p className="text-xs text-zinc-500 font-medium">{isLogin ? "Enter your credentials to continue" : "Start your 100-day journey today"}</p>

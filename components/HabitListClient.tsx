@@ -127,14 +127,14 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                   onClick={() => toggleHabit(habit.id, false)}
                   className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isMissed ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
                 >
-                  NO
+                  MISS
                 </button>
                 <button
                   disabled={loadingId === habit.id}
                   onClick={() => toggleHabit(habit.id, true)}
                   className={`h-12 w-12 rounded-2xl flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-all ${isCompleted ? 'bg-emerald-500 text-white border-emerald-400 shadow-lg shadow-emerald-500/20' : 'bg-zinc-100/10 text-zinc-600 border border-zinc-800'}`}
                 >
-                  YES
+                  DONE
                 </button>
                 <button 
                   onClick={() => {

@@ -69,17 +69,38 @@ export default function AddHabit() {
 
         <div className="space-y-4 pt-4 border-t border-zinc-900">
           <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Icon & Color</label>
-          <div className="flex items-center space-x-4">
-             <div className="flex -space-x-2">
-                {ICONS.slice(0, 4).map(i => (
-                   <button key={i} type="button" onClick={() => setIcon(i)} className={`w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sm ${icon === i ? 'border-emerald-500' : ''}`}>{i}</button>
-                ))}
-             </div>
-             <div className="flex -space-x-2">
-                {COLORS.slice(0, 4).map(c => (
-                   <button key={c} type="button" onClick={() => setColor(c)} className={`w-6 h-6 rounded-full border-2 ${color === c ? 'border-white' : 'border-zinc-800 focus:scale-110'}`} style={{ backgroundColor: c }} />
-                ))}
-             </div>
+          <div className="space-y-6">
+            <div className="flex flex-wrap gap-3">
+              {ICONS.map(i => (
+                <button 
+                  key={i} 
+                  type="button" 
+                  onClick={() => setIcon(i)} 
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all ${
+                    icon === i 
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' 
+                      : 'bg-zinc-900 border border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                  }`}
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {COLORS.map(c => (
+                <button 
+                  key={c} 
+                  type="button" 
+                  onClick={() => setColor(c)} 
+                  className={`w-8 h-8 rounded-full transition-all ${
+                    color === c 
+                      ? 'ring-2 ring-white ring-offset-4 ring-offset-zinc-950 scale-110' 
+                      : 'hover:scale-110 opacity-60 hover:opacity-100'
+                  }`} 
+                  style={{ backgroundColor: c }} 
+                />
+              ))}
+            </div>
           </div>
         </div>
         <div className="space-y-6 pt-4 border-t border-zinc-900">

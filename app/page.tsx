@@ -62,12 +62,14 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pb-32 animate-slide-up max-w-md mx-auto w-full">
       <header className="pt-16 pb-12 flex flex-col items-center space-y-8 text-center shrink-0">
-        <div className="flex items-center justify-between w-full px-4 mb-4">
-           <button className="text-zinc-500 hover:text-zinc-300 transition-colors">
-             <Menu size={24} />
-           </button>
-           <h2 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">{activeChallenge?.title || "2022 Challenge"}</h2>
-           <ShareButton title={`${daysPassed+1} Days of Habitify`} />
+        <div className="flex items-center justify-between w-full px-4 mb-4 relative">
+           <div className="w-10" /> {/* Spacer for symmetry */}
+           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 italic flex-1 text-center truncate px-2">
+             {activeChallenge?.title || "2022 Challenge"}
+           </h2>
+           <div className="w-10 flex justify-end">
+             <ShareButton title={`${daysPassed+1} Days of Habitify`} />
+           </div>
         </div>
  
         <div className="space-y-1">
