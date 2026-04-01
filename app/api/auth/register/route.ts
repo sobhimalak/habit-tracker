@@ -30,16 +30,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ user: { id: user.id, email: user.email, name: user.name } }, { status: 201 });
   } catch (error: any) {
-    console.error("Registration error full details:", {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack,
-    });
+    console.error("DEBUG: Registration failed:", error);
     return NextResponse.json({ 
       message: "Registration failed", 
-      details: error.message,
-      code: error.code 
+      error: error.message || "Unknown error",
+      code: error.code || "NO_CODE",
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }, { status: 500 });
   }
 }

@@ -101,14 +101,19 @@ export default function AddHabit() {
             <div className="space-y-4 animate-slide-up">
               <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Goal (Days)</label>
               <div className="flex gap-2">
-                {['30', '75', '100'].map(goal => (
+                {[
+                  { label: "1 MONTH", value: "30" },
+                  { label: "2 MONTHS", value: "60" },
+                  { label: "3 MONTHS", value: "90" },
+                  { label: "4 MONTHS", value: "120" },
+                ].map(item => (
                   <button
-                    key={goal}
+                    key={item.value}
                     type="button"
-                    onClick={() => setChallengeGoal(goal)}
-                    className={`flex-1 py-3 rounded-xl border font-black text-xs transition-all ${challengeGoal === goal ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}
+                    onClick={() => setChallengeGoal(item.value)}
+                    className={`flex-1 py-3 rounded-xl border font-black text-[10px] transition-all ${challengeGoal === item.value ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}
                   >
-                    {goal} DAYS
+                    {item.label}
                   </button>
                 ))}
                 <input
