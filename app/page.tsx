@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { format, differenceInDays } from "date-fns";
@@ -27,6 +27,10 @@ export default async function Home() {
     include: {
       challenges: {
         where: { isActive: true }
+      },
+      logs: {
+        where: { completed: true },
+        orderBy: { date: 'desc' }
       }
     }
   });
@@ -38,10 +42,14 @@ export default async function Home() {
     }
   });
  
-  const habitsWithLogs = habits.map(habit => {
+  const habitsWithLogs = (habits as any[]).map(habit => {
     const log = logs.find(l => l.habitId === habit.id);
     return {
       ...habit,
+      streak: habit.logs?.length || 0,
+      goalValue: habit.goalValue || 1,
+      goalUnit: habit.goalUnit || "times",
+      reminderTime: habit.reminderTime || undefined,
       todayLog: log || null
     };
   });

@@ -2,12 +2,16 @@
 
 import { Share2 } from "lucide-react";
 
-export default function ShareButton() {
+interface ShareButtonProps {
+  title?: string;
+}
+
+export default function ShareButton({ title }: ShareButtonProps) {
   const handleShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Habit Tracker Premium",
+          title: title || "Habit Tracker Premium",
           text: "Check out my progress on Habit Tracker!",
           url: window.location.origin,
         });

@@ -27,6 +27,9 @@ model Habit {
   color       String?
   type        String      @default("daily") // daily, challenge
   isActive    Boolean     @default(true)
+  goalValue   Int         @default(1)
+  goalUnit    String      @default("times")
+  reminderTime String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   logs        HabitLog[]

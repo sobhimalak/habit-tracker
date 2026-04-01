@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import HabitManagerClient from "@/components/HabitManagerClient";
@@ -26,7 +26,7 @@ export default async function HabitsPage() {
     }
   });
 
-  const habits = rawHabits.map(h => ({
+  const habits = (rawHabits as any[]).map(h => ({
     id: h.id,
     name: h.name,
     streak: h.logs?.length || 0,

@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../../api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ChevronLeft, X, MessageSquare, Clock } from "lucide-react";
 import Link from "next/link";
-import LogDetailClient from "../../../../components/LogDetailClient";
+import LogDetailClient from "@/components/LogDetailClient";
 
 export default async function LogDetail({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
