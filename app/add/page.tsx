@@ -82,6 +82,45 @@ export default function AddHabit() {
              </div>
           </div>
         </div>
+        <div className="space-y-6 pt-4 border-t border-zinc-900">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Challenge Mode</label>
+              <p className="text-[10px] text-zinc-500 italic pl-1">Track progress over specific days</p>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setIsChallenge(!isChallenge)}
+              className={`w-12 h-6 rounded-full transition-all relative ${isChallenge ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${isChallenge ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+
+          {isChallenge && (
+            <div className="space-y-4 animate-slide-up">
+              <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Goal (Days)</label>
+              <div className="flex gap-2">
+                {['30', '75', '100'].map(goal => (
+                  <button
+                    key={goal}
+                    type="button"
+                    onClick={() => setChallengeGoal(goal)}
+                    className={`flex-1 py-3 rounded-xl border font-black text-xs transition-all ${challengeGoal === goal ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' : 'bg-zinc-900 border-zinc-800 text-zinc-500'}`}
+                  >
+                    {goal} DAYS
+                  </button>
+                ))}
+                <input
+                  type="number"
+                  value={challengeGoal}
+                  onChange={(e) => setChallengeGoal(e.target.value)}
+                  className="w-20 bg-zinc-900 border border-zinc-800 rounded-xl px-2 text-center text-white font-black text-xs focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+          )}
+        </div>
         <div className="pt-8 px-4">
           <button
             type="submit"
