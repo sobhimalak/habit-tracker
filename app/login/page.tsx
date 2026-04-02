@@ -1,13 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Activity } from "lucide-react";
 
 export default function Login() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [isLogin, setIsLogin] = useState(true);
+  
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+      router.refresh();
+    }
+  }, [status, router]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -137,7 +146,7 @@ export default function Login() {
 
           <div className="w-full">
             <button 
-              onClick={() => signIn("google")}
+              onClick={() => signIn("google", { callbackUrl: "/" })}
               className="w-full h-14 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl flex items-center justify-center space-x-3 active:scale-95 transition-all group hover:border-emerald-500/30"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
