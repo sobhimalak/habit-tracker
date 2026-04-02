@@ -2,7 +2,7 @@
  
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Plus, Dumbbell, User } from "lucide-react";
+import { Home, Calendar, Plus, Dumbbell, User, TrendingUp } from "lucide-react";
 
  
 export default function BottomNav() {
@@ -18,9 +18,9 @@ export default function BottomNav() {
  
   const navItems = [
     { icon: Home, path: "/", label: "Today" },
-    { icon: Dumbbell, path: "/exercises", label: "Exercises" },
+    { icon: Dumbbell, path: "/exercises", label: "Library" },
     { icon: Plus, path: "/add", label: "Add", center: true },
-    { icon: Calendar, path: "/history", label: "History" },
+    { icon: TrendingUp, path: "/stats", label: "Progress" },
     { icon: User, path: "/profile", label: "Profile" },
   ];
  
