@@ -137,18 +137,15 @@ export default function Login() {
             <div className="h-[1px] bg-zinc-900 flex-1" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 w-full">
-            <button className="h-14 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl flex items-center justify-center space-x-3 active:scale-95 transition-all group">
+          <div className="w-full">
+            <button 
+              onClick={() => signIn("google")}
+              className="w-full h-14 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl flex items-center justify-center space-x-3 active:scale-95 transition-all group hover:border-emerald-500/30"
+            >
               <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.152 1.152-2.904 2.384-6.192 2.384-5.352 0-9.624-4.344-9.624-9.696s4.272-9.696 9.624-9.696c2.88 0 5.112 1.128 6.648 2.568l2.328-2.328C19.144 1.48 16.2 0 12.48 0 5.672 0 0 5.672 0 12.48s5.672 12.48 12.48 12.48c3.704 0 6.648-1.216 8.744-3.416 2.136-2.126 2.808-5.112 2.808-7.552 0-.696-.056-1.352-.16-2.072h-11.41z"/>
               </svg>
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-white transition-colors">Google</span>
-            </button>
-            <button className="h-14 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl flex items-center justify-center space-x-3 active:scale-95 transition-all group">
-              <svg className="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-white transition-colors">Apple ID</span>
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-white transition-colors">Continue with Google</span>
             </button>
           </div>
 
