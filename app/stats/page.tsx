@@ -2,9 +2,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ChevronLeft, TrendingUp, Calendar, Zap, Dumbbell, Target } from "lucide-react";
+import { ChevronLeft, TrendingUp, Calendar, Zap, Dumbbell, Target, Weight } from "lucide-react";
 import Link from "next/link";
-import { startOfWeek, endOfWeek, eachDayOfInterval, format, subDays } from "date-fns";
+import { startOfWeek, endOfWeek, eachDayOfInterval, format, subDays, startOfYesterday, endOfYesterday } from "date-fns";
 
 const MUSCLE_GROUPS = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"];
 
@@ -27,6 +27,8 @@ export default async function StatsPage() {
 
   // 2. Weekly Activity
   const startOfThisWeek = startOfWeek(today);
+  const startOfLastWeek = startOfWeek(subDays(startOfThisWeek, 1));
+  
   const daysOfThisWeek = eachDayOfInterval({
     start: startOfThisWeek,
     end: endOfWeek(today)
@@ -46,28 +48,43 @@ export default async function StatsPage() {
     return habitsCount > 0 ? (count / habitsCount) * 100 : 0;
   });
 
-  // 3. Muscle Focus Aggregation
-  const loggedExercises = await prisma.habitLogExercise.findMany({
+  // 3. Performance Aggregation (New: Volume Evolution)
+  const loggedExercises = await (prisma as any).habitLogExercise.findMany({
     where: {
       log: { habit: { userId } }
     },
     include: { exercise: true }
   });
 
+  // Total Volume (Tonnage)
+  const totalVolume = loggedExercises.reduce((acc: number, le: any) => {
+    return acc + ((le.sets || 0) * (le.reps || 0) * (le.weight || 0));
+  }, 0);
+
+  // Weekly Volume Comparison
+  const thisWeekExercises = loggedExercises.filter((le: any) => le.createdAt >= startOfThisWeek);
+  const lastWeekExercises = loggedExercises.filter((le: any) => le.createdAt >= startOfLastWeek && le.createdAt < startOfThisWeek);
+  
+  const thisWeekVol = thisWeekExercises.reduce((acc: number, le: any) => acc + ((le.sets || 0) * (le.reps || 0) * (le.weight || 0)), 0);
+  const lastWeekVol = lastWeekExercises.reduce((acc: number, le: any) => acc + ((le.sets || 0) * (le.reps || 0) * (le.weight || 0)), 0);
+  
+  const volumeGrowth = lastWeekVol > 0 ? Math.round(((thisWeekVol - lastWeekVol) / lastWeekVol) * 100) : 0;
+
+  // 4. Muscle Focus
   const muscleFocus = MUSCLE_GROUPS.map(muscle => {
-    const count = loggedExercises.filter(le => le.exercise.muscleGroup === muscle).length;
+    const count = loggedExercises.filter((le: any) => le.exercise.muscleGroup === muscle).length;
     return { name: muscle, count };
   });
 
   const totalMovements = loggedExercises.length || 1;
   const muscleGroupsWithPercentage = muscleFocus.map(m => ({
     ...m,
-    percentage: Math.min(100, (m.count / (totalMovements / 2)) * 100) // Weighted relative to variety
+    percentage: Math.min(100, (m.count / (totalMovements / 2)) * 100)
   })).sort((a, b) => b.count - a.count);
 
-  // 4. Top Exercises
+  // 5. Top Exercises
   const exerciseCounts: Record<string, { name: string, count: number }> = {};
-  loggedExercises.forEach(le => {
+  loggedExercises.forEach((le: any) => {
     if (!exerciseCounts[le.exerciseId]) {
       exerciseCounts[le.exerciseId] = { name: le.exercise.name, count: 0 };
     }
@@ -77,7 +94,7 @@ export default async function StatsPage() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 3);
 
-  // 5. Overall Consistency (Average over last 30 days)
+  // 6. Overall Consistency
   const totalLogs30Days = await prisma.habitLog.count({
     where: { habit: { userId }, completed: true, date: { gte: format(subDays(today, 30), "yyyy-MM-dd") } }
   });
@@ -89,8 +106,7 @@ export default async function StatsPage() {
   const consistencyCirc = 2 * Math.PI * 85;
   const fitnessCirc = 2 * Math.PI * 60;
   
-  // Fitness consistency (% of days with at least one exercise logged)
-  const daysWithWorkouts = new Set(loggedExercises.map(le => le.logId)).size;
+  const daysWithWorkouts = new Set(loggedExercises.map((le: any) => le.logId)).size;
   const fitnessConsistency = Math.min(100, (daysWithWorkouts / 30) * 100);
 
   return (
@@ -121,37 +137,42 @@ export default async function StatsPage() {
             </svg>
             <div className="text-center z-10">
               <span className="text-3xl font-black italic text-white leading-none">{consistency}%</span>
-              <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic mt-1">Average</p>
+              <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic mt-1">Consistency</p>
             </div>
           </div>
         </div>
 
-        {/* Rapid Status Cards */}
+        {/* Status Cards */}
         <div className="grid grid-cols-2 gap-4">
           <div className="premium-card bg-[#111113] p-6 flex flex-col space-y-4 shadow-2xl shadow-black/40">
-            <TrendingUp className="text-emerald-500" size={20} />
+            <Weight className="text-emerald-500" size={20} />
             <div className="space-y-1">
-              <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Habit Score</p>
-              <h4 className="text-xl font-black italic text-white uppercase">{consistency}</h4>
+              <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Total Tonnage</p>
+              <h4 className="text-xl font-black italic text-white uppercase">{(totalVolume / 1000).toFixed(1)}T</h4>
+              {volumeGrowth !== 0 && (
+                <p className={`text-[8px] font-black uppercase tracking-widest ${volumeGrowth > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  {volumeGrowth > 0 ? '↑' : '↓'} {Math.abs(volumeGrowth)}% <span className="text-zinc-700">vs last week</span>
+                </p>
+              )}
             </div>
           </div>
           <div className="premium-card bg-[#111113] p-6 flex flex-col space-y-4 shadow-2xl shadow-black/40">
             <Dumbbell className="text-rose-500" size={20} />
             <div className="space-y-1">
               <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Workouts</p>
-              <h4 className="text-xl font-black italic text-white uppercase">{daysWithWorkouts} Sessions</h4>
+              <h4 className="text-xl font-black italic text-white uppercase">{daysWithWorkouts}</h4>
+              <p className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Active Sessions</p>
             </div>
           </div>
         </div>
 
-        {/* Muscle Group Focus (New) */}
+        {/* Muscle Group Focus */}
         <div className="premium-card bg-[#111113] p-8 space-y-8 shadow-2xl shadow-black/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Target size={14} className="text-emerald-500" />
               <h3 className="text-xs font-black uppercase tracking-widest text-white italic">Muscle Focus</h3>
             </div>
-            <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest italic">Last 30 Days</span>
           </div>
 
           <div className="space-y-6">
@@ -172,34 +193,7 @@ export default async function StatsPage() {
           </div>
         </div>
 
-        {/* Top Movements Section (New) */}
-        <div className="space-y-6 px-1">
-          <div className="flex items-center space-x-3">
-            <Zap size={14} className="text-amber-500" />
-            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Most Performed</h3>
-          </div>
-          
-          <div className="space-y-4">
-            {topMovements.map((move, idx) => (
-              <div key={idx} className="flex items-center justify-between p-5 bg-zinc-900/30 border border-zinc-900 rounded-[2rem] hover:border-emerald-500/20 transition-all active:scale-[0.98]">
-                <div className="flex items-center space-x-4">
-                  <div className="text-xl font-black italic opacity-20 text-zinc-500">0{idx + 1}</div>
-                  <h4 className="text-xs font-black text-white uppercase italic tracking-wider leading-none">{move.name}</h4>
-                </div>
-                <div className="px-3 py-1 bg-zinc-950 rounded-full border border-zinc-800 text-[8px] font-black text-zinc-600 uppercase tracking-widest italic">
-                  {move.count}x
-                </div>
-              </div>
-            ))}
-            {topMovements.length === 0 && (
-               <div className="p-8 bg-zinc-900/10 border border-dashed border-zinc-900 rounded-[2rem] text-center">
-                  <p className="text-[9px] font-black text-zinc-800 uppercase tracking-widest italic">No exercise data recorded yet.</p>
-               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Weekly Evolution (Refined) */}
+        {/* Activity Stream */}
         <div className="premium-card bg-[#111113] p-8 space-y-8 shadow-2xl shadow-black/40">
            <div className="flex items-center justify-between">
               <h3 className="text-xs font-black uppercase tracking-widest text-white italic">Activity Stream</h3>
@@ -207,22 +201,16 @@ export default async function StatsPage() {
            </div>
            <div className="flex justify-between items-end h-32 px-2 gap-4">
               {weeklyActivity.map((h, i) => (
-                 <div key={i} className="flex-1 bg-zinc-950 rounded-xl relative group h-full">
+                 <div key={i} className="flex-1 bg-zinc-950 rounded-xl relative group h-full overflow-hidden">
                     <div 
-                       className="absolute bottom-0 left-0 w-full bg-emerald-500 rounded-xl shadow-lg shadow-emerald-500/10 transition-all duration-500 hover:bg-emerald-400" 
-                       style={{ height: `${Math.max(5, h)}%` }}
+                       className="absolute bottom-0 left-0 w-full bg-emerald-500 shadow-lg shadow-emerald-500/10 transition-all duration-500 hover:bg-emerald-400" 
+                       style={{ height: `${Math.max(2, h)}%` }}
                     />
                  </div>
               ))}
            </div>
            <div className="flex justify-between text-[8px] font-black text-zinc-800 uppercase tracking-widest px-2 italic">
-              <span>Sun</span>
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
+              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
            </div>
         </div>
       </main>
