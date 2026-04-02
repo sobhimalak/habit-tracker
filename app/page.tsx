@@ -7,12 +7,13 @@ import HabitListClient from "@/components/HabitListClient";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import ShareButton from "@/components/ShareButton";
+import LandingPage from "@/components/LandingPage";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect("/login");
+    return <LandingPage />;
   }
 
   const today = new Date();
