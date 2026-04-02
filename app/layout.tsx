@@ -7,7 +7,7 @@ import BottomNav from "@/components/BottomNav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Habit Tracker",
+  title: "Forme Habits",
   description: "A premium mobile-first habit tracker",
   manifest: "/manifest.json",
   appleWebApp: {

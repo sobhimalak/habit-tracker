@@ -60,7 +60,7 @@ export default function Login() {
         </div>
         
         <div className="space-y-1 text-center">
-          <h1 className="text-4xl font-black tracking-tighter italic text-white uppercase">Habitify</h1>
+          <h1 className="text-4xl font-black tracking-tighter italic text-white uppercase">Forme Habits</h1>
           <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-1 italic">Level up your life</p>
         </div>
       </header>

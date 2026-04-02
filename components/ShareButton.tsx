@@ -11,8 +11,8 @@ export default function ShareButton({ title }: ShareButtonProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: title || "Habit Tracker Premium",
-          text: "Check out my progress on Habit Tracker!",
+          title: title || "Forme Habits Premium",
+          text: "Check out my progress on Forme Habits!",
           url: window.location.origin,
         });
       } catch (err) {

@@ -1,6 +1,6 @@
 {
-  "name": "Habit Tracker Premium",
-  "short_name": "Habits",
+  "name": "Forme Habits",
+  "short_name": "Forme",
   "description": "A premium mobile-first habit tracker for high-performers",
   "start_url": "/",
   "display": "standalone",

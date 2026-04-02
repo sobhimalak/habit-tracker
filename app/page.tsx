@@ -83,7 +83,7 @@ export default async function Home() {
             {activeChallenge?.title || "My Progress"}
           </h2>
           <div className="w-10 flex justify-end">
-            <ShareButton title={`${displayDay} Days of Habitify`} />
+            <ShareButton title={`${displayDay} Days of Forme Habits`} />
           </div>
         </div>
 
