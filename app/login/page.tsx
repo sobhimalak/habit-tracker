@@ -106,7 +106,13 @@ export default function Login() {
               <div className="flex justify-between items-center px-1">
                 <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Password</label>
                 {isLogin && (
-                  <button type="button" className="text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-zinc-300 transition-colors italic">Forgot?</button>
+                  <button 
+                    type="button" 
+                    onClick={() => setError("Password reset is coming soon. Please use Google Login for now.")}
+                    className="text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-zinc-300 transition-colors italic"
+                  >
+                    Forgot?
+                  </button>
                 )}
               </div>
               <input
