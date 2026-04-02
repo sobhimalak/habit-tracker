@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
 
+import { syncExercisesToDB } from "@/lib/db-sync";
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -13,36 +15,28 @@ export async function GET(req: Request) {
     const search = searchParams.get("search")?.toLowerCase() || "";
     const muscle = searchParams.get("muscle") || "";
 
-    // Load static exercises from JSON
-    const jsonPath = path.join(process.cwd(), "data", "exercises.json");
-    const jsonContent = fs.readFileSync(jsonPath, "utf8");
-    const builtInExercises = JSON.parse(jsonContent).map((ex: any, index: number) => ({
-      ...ex,
-      id: `builtin-${index}`,
-      isCustom: false,
-    }));
+    // IMPORTANT: Sync with JSON to ensure DB has all builtin IDs
+    await syncExercisesToDB();
 
-    // Load custom exercises from DB
-    const customExercises = session?.user?.id ? await prisma.exercise.findMany({
+    // Now fetch everything from the DB
+    let allExercises = await prisma.exercise.findMany({
       where: {
         OR: [
-          { userId: session.user.id },
-          { userId: null } // Just in case some are added globally
+          { userId: session?.user?.id || null }, // User's custom or global built-ins
+          { isCustom: false } // Built-ins
         ]
       }
-    }) : [];
-
-    let allExercises = [...builtInExercises, ...customExercises];
+    });
 
     // Filter by search and muscle
     if (search) {
-      allExercises = allExercises.filter(ex => 
+      allExercises = allExercises.filter((ex: any) => 
         ex.name.toLowerCase().includes(search) || 
         ex.muscleGroup.toLowerCase().includes(search)
       );
     }
     if (muscle && muscle !== "All") {
-      allExercises = allExercises.filter(ex => ex.muscleGroup === muscle);
+      allExercises = allExercises.filter((ex: any) => ex.muscleGroup === muscle);
     }
 
     // If logged in, get favorite IDs
@@ -52,11 +46,11 @@ export async function GET(req: Request) {
         where: { userId: session.user.id },
         select: { exerciseId: true }
       });
-      favoriteIds = favorites.map(f => f.exerciseId);
+      favoriteIds = favorites.map((f: any) => f.exerciseId);
     }
 
     // Attach favorite status
-    const exercisesWithFavorites = allExercises.map(ex => ({
+    const exercisesWithFavorites = allExercises.map((ex: any) => ({
       ...ex,
       isFavorite: favoriteIds.includes(ex.id)
     }));

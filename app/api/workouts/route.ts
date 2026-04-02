@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+import { syncExercisesToDB } from "@/lib/db-sync";
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -31,6 +33,9 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
+
+    // Sync database with JSON before creating relations
+    await syncExercisesToDB();
 
     const body = await req.json();
     const { name, exerciseIds } = body;
