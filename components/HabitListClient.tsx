@@ -2,7 +2,8 @@
  
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle } from "lucide-react";
+import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle, Dumbbell, Plus } from "lucide-react";
+import WorkoutSelector from "./WorkoutSelector";
  
 type Habit = {
   id: string;
@@ -14,6 +15,7 @@ type Habit = {
   goalUnit: string;
   reminderTime?: string;
   todayLog?: {
+    id?: string;
     completed: boolean;
     notes?: string;
     timeCompleted?: string;
@@ -37,6 +39,16 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
   const [notes, setNotes] = useState("");
   const [timeCompleted, setTimeCompleted] = useState("");
   const [missedReason, setMissedReason] = useState("");
+  const [showWorkoutSelector, setShowWorkoutSelector] = useState(false);
+  const [loggedExercises, setLoggedExercises] = useState<any[]>([]);
+
+  const fetchLoggedExercises = async (logId: string) => {
+    const res = await fetch(`/api/logs/exercises?logId=${logId}`);
+    if (res.ok) {
+      const data = await res.json();
+      setLoggedExercises(data);
+    }
+  };
  
   const toggleHabit = async (habitId: string, completed: boolean, reasonFlag?: string) => {
     setLoadingId(habitId);
@@ -135,10 +147,15 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                 </div>
                 <button
                   onClick={() => {
+                    const habitData = habits.find(h => h.id === habit.id);
                     setSelectedHabitId(habit.id);
                     setNotes(habit.todayLog?.notes || "");
                     setTimeCompleted(habit.todayLog?.timeCompleted || "");
                     setMissedReason(habit.todayLog?.missedReason || "");
+                    setShowWorkoutSelector(false);
+                    if (habit.todayLog?.id || (habitData as any).todayLogId) {
+                      // We need the actual log ID. If it's a new log, we might need to create it first or use habitId+date
+                    }
                   }}
                   className="w-8 h-8 flex items-center justify-center text-zinc-700 hover:text-zinc-500 transition-colors shrink-0 ml-2"
                 >
@@ -223,16 +240,58 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                   </div>
                 </div>
  
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] pl-1">Daily Notes</label>
-                  <textarea 
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full bg-zinc-900/40 border border-zinc-800 rounded-3xl p-5 focus:outline-none focus:border-emerald-500/50 h-32 resize-none text-white text-sm font-black italic placeholder:text-zinc-800"
-                    placeholder="Reflect on today's discipline..."
-                  />
                 </div>
-              </div>
+
+                {/* Workout/Exercise Integration Section */}
+                <div className="pt-8 border-t border-zinc-900/50 space-y-6">
+                  {showWorkoutSelector ? (
+                    <WorkoutSelector 
+                      logId={habits.find(h => h.id === selectedHabitId)?.todayLog?.id || ""} 
+                      onClose={() => setShowWorkoutSelector(false)}
+                      onSaved={() => {
+                        const logId = habits.find(h => h.id === selectedHabitId)?.todayLog?.id;
+                        if (logId) fetchLoggedExercises(logId);
+                      }}
+                    />
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between px-1">
+                        <div className="flex items-center space-x-2">
+                          <Dumbbell size={12} className="text-emerald-500" />
+                          <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic tracking-widest">Movement Log</h3>
+                        </div>
+                        <button 
+                          onClick={() => setShowWorkoutSelector(true)}
+                          className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic"
+                        >
+                          {loggedExercises.length > 0 ? "Change Session" : "Add Session"}
+                        </button>
+                      </div>
+
+                      {loggedExercises.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-3">
+                          {loggedExercises.map((ex, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-4 bg-zinc-900/30 border border-zinc-900 rounded-2xl">
+                              <div className="flex items-center space-x-3">
+                                <div className="text-[10px] font-black text-zinc-800 italic">0{idx + 1}</div>
+                                <p className="text-[10px] font-black text-white uppercase tracking-tight italic">{ex.name}</p>
+                              </div>
+                              <Check size={14} className="text-emerald-500/40" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => setShowWorkoutSelector(true)}
+                          className="w-full py-8 bg-zinc-900/30 border border-dashed border-zinc-800 rounded-[2rem] flex flex-col items-center justify-center space-y-2 opacity-60 hover:opacity-100 transition-opacity"
+                        >
+                          <Plus size={20} className="text-zinc-600" />
+                          <p className="text-[9px] font-black text-zinc-700 uppercase tracking-widest italic">No session assigned</p>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
  
               <div className="pt-4">
                 <button

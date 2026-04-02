@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Bench Press",
+    "muscleGroup": "Chest",
+    "equipment": "Barbell",
+    "instructions": "1. Lie flat on a bench. 2. Grip the barbell with hands slightly wider than shoulder-width. 3. Lower the bar to your mid-chest. 4. Press the bar back up until your arms are fully extended."
+  },
+  {
+    "name": "Pushups",
+    "muscleGroup": "Chest",
+    "equipment": "Bodyweight",
+    "instructions": "1. Place hands shoulder-width apart on the floor. 2. Keep your body in a straight line. 3. Lower yourself until your chest nearly touches the floor. 4. Push back up."
+  },
+  {
+    "name": "Dumbbell Flyes",
+    "muscleGroup": "Chest",
+    "equipment": "Dumbbells",
+    "instructions": "1. Lie on a flat bench with dumbbells held above your chest. 2. With a slight bend in your elbows, lower the weights out to your sides. 3. Squeeze your chest to bring the weights back together."
+  },
+  {
+    "name": "Pull-ups",
+    "muscleGroup": "Back",
+    "equipment": "Pull-up Bar",
+    "instructions": "1. Grab the bar with an overhand grip. 2. Pull your body up until your chin is over the bar. 3. Lower yourself back down with control."
+  },
+  {
+    "name": "Bent Over Rows",
+    "muscleGroup": "Back",
+    "equipment": "Barbell",
+    "instructions": "1. Bend at the waist with a straight back. 2. Pull the barbell toward your lower chest. 3. Squeeze your shoulder blades together at the top."
+  },
+  {
+    "name": "Lat Pulldowns",
+    "muscleGroup": "Back",
+    "equipment": "Cable Machine",
+    "instructions": "1. Sit at the machine and grab the wide bar. 2. Pull the bar down to your upper chest. 3. Controlled return to the starting position."
+  },
+  {
+    "name": "Squats",
+    "muscleGroup": "Legs",
+    "equipment": "Barbell",
+    "instructions": "1. Place the barbell on your upper back. 2. Set feet shoulder-width apart. 3. Lower your hips until thighs are parallel to the floor. 4. Drive back up through your heels."
+  },
+  {
+    "name": "Lunges",
+    "muscleGroup": "Legs",
+    "equipment": "Bodyweight",
+    "instructions": "1. Stand upright, take a large step forward. 2. Lower your hips until both knees are bent at about 90 degrees. 3. Push back to start."
+  },
+  {
+    "name": "Deadlifts",
+    "muscleGroup": "Legs",
+    "equipment": "Barbell",
+    "instructions": "1. Stand with feet hip-width apart. 2. Hinge at the hips to grab the bar. 3. Keep back flat and pull the bar up by extending your hips and knees."
+  },
+  {
+    "name": "Overhead Press",
+    "muscleGroup": "Shoulders",
+    "equipment": "Barbell",
+    "instructions": "1. Hold the barbell at shoulder height. 2. Press the bar directly overhead until arms are locked. 3. Lower back to start."
+  },
+  {
+    "name": "Lateral Raises",
+    "muscleGroup": "Shoulders",
+    "equipment": "Dumbbells",
+    "instructions": "1. Stand with dumbbells at your sides. 2. Raise the weights out to the side until they reach shoulder height. 3. Lower with control."
+  },
+  {
+    "name": "Bicep Curls",
+    "muscleGroup": "Arms",
+    "equipment": "Dumbbells",
+    "instructions": "1. Hold dumbbells with palms facing forward. 2. Curl the weights toward your shoulders while keeping elbows stationary. 3. Lower back down."
+  },
+  {
+    "name": "Tricep Dips",
+    "muscleGroup": "Arms",
+    "equipment": "Parallel Bars",
+    "instructions": "1. Support your body on parallel bars with arms locked. 2. Lower yourself by bending your elbows. 3. Push back up."
+  },
+  {
+    "name": "Plank",
+    "muscleGroup": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "1. Hold a pushup position but rest on your forearms. 2. Keep your body in a straight line from head to heels. 3. Engage your core and hold."
+  },
+  {
+    "name": "Crunches",
+    "muscleGroup": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "1. Lie on your back with knees bent. 2. Lift your shoulders off the floor using your abdominal muscles. 3. Lower back down."
+  }
+]

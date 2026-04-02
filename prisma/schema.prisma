@@ -87,6 +87,9 @@ model HabitLog {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   
+  // Link to exercises performed on this log
+  loggedExercises HabitLogExercise[]
+  
   @@unique([habitId, date])
 }
 
@@ -100,4 +103,64 @@ model Challenge {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Exercise {
+  id            String   @id @default(cuid())
+  name          String
+  muscleGroup   String
+  equipment     String?
+  instructions  String?  @db.Text
+  imageUrl      String?
+  isCustom      Boolean  @default(false)
+  userId        String?  // Null for built-in library
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  favorites     ExerciseFavorite[]
+  templateItems WorkoutTemplateExercise[]
+  logItems      HabitLogExercise[]
+}
+
+model ExerciseFavorite {
+  id          String   @id @default(cuid())
+  userId      String
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, exerciseId])
+}
+
+model WorkoutTemplate {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  exercises   WorkoutTemplateExercise[]
+}
+
+model WorkoutTemplateExercise {
+  id          String   @id @default(cuid())
+  templateId  String
+  template    WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  order       Int      @default(0)
+
+  @@index([templateId])
+}
+
+model HabitLogExercise {
+  id          String   @id @default(cuid())
+  logId       String
+  log         HabitLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  order       Int      @default(0)
+  completed   Boolean  @default(false)
+
+  @@index([logId])
 }

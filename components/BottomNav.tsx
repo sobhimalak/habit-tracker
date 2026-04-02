@@ -2,7 +2,7 @@
  
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Plus, BarChart2, User } from "lucide-react";
+import { Home, Calendar, Plus, Dumbbell, User } from "lucide-react";
 
  
 export default function BottomNav() {
@@ -11,13 +11,14 @@ export default function BottomNav() {
   const isFullPage = pathname === "/login" || 
                     pathname === "/add" || 
                     pathname.startsWith("/habits/edit/") || 
+                    pathname.startsWith("/exercises/") ||
                     pathname.includes("/log");
 
   if (isFullPage) return null;
  
   const navItems = [
     { icon: Home, path: "/", label: "Today" },
-    { icon: BarChart2, path: "/stats", label: "Stats" },
+    { icon: Dumbbell, path: "/exercises", label: "Exercises" },
     { icon: Plus, path: "/add", label: "Add", center: true },
     { icon: Calendar, path: "/history", label: "History" },
     { icon: User, path: "/profile", label: "Profile" },
