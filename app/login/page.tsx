@@ -53,13 +53,9 @@ export default function Login() {
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pt-8 pb-12 animate-slide-up max-w-md mx-auto w-full">
-      <header className="flex flex-col items-center justify-center space-y-4 mb-4">
-        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
-          <span className="text-4xl font-black italic text-emerald-500">F</span>
-        </div>
-        
+      <header className="flex flex-col items-center justify-center space-y-2 mb-12">
         <div className="space-y-1 text-center font-black">
-          <h1 className="text-4xl tracking-tighter italic text-white uppercase">Forme Habits</h1>
+          <h1 className="text-5xl tracking-tighter italic text-white uppercase">Forme Habits</h1>
           <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-1 italic">Elevate Your Existence</p>
         </div>
       </header>
