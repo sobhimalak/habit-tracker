@@ -1,27 +1,14 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { LogOut, User, Calendar, ChevronRight, Settings, Shield, Bell } from "lucide-react";
+import { LogOut, User, Calendar, ChevronRight, Settings, Shield, Bell, BellOff } from "lucide-react";
 import Link from "next/link";
+import NotificationHub from "@/components/NotificationHub";
 
 export default function Profile() {
   const { data: session } = useSession();
 
   const menuItems = [
-    { 
-      icon: Calendar, 
-      label: "Habit History", 
-      desc: "Review your consistency journal", 
-      path: "/history",
-      color: "text-emerald-500"
-    },
-    { 
-      icon: Bell, 
-      label: "Notifications", 
-      desc: "Manage your daily reminders", 
-      path: "#",
-      color: "text-zinc-500"
-    },
     { 
       icon: Shield, 
       label: "Security", 
@@ -55,28 +42,51 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Action Menu */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest px-2 italic">Management</h3>
-          <div className="space-y-3">
-            {menuItems.map((item, idx) => (
+        {/* Action Menu & Notifications */}
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest px-2 italic text-center">Alert System</h3>
+            <NotificationHub />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-zinc-700 uppercase tracking-widest px-2 italic">Management</h3>
+            <div className="space-y-3">
               <Link
-                key={idx}
-                href={item.path}
+                href="/history"
                 className="flex items-center justify-between p-6 bg-zinc-900/30 border border-zinc-900 rounded-[2rem] hover:border-emerald-500/30 transition-all group active:scale-[0.98]"
               >
                 <div className="flex items-center space-x-5">
-                  <div className={`w-12 h-12 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-900 ${item.color} group-hover:border-emerald-500/20 transition-colors`}>
-                    <item.icon size={20} />
+                  <div className="w-12 h-12 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-900 text-emerald-500 group-hover:border-emerald-500/20 transition-colors">
+                    <Calendar size={20} />
                   </div>
                   <div className="text-left space-y-0.5">
-                    <p className="text-xs font-black text-white uppercase italic tracking-wider leading-none">{item.label}</p>
-                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{item.desc}</p>
+                    <p className="text-xs font-black text-white uppercase italic tracking-wider leading-none">Habit History</p>
+                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Review your journal</p>
                   </div>
                 </div>
                 <ChevronRight size={18} className="text-zinc-800 group-hover:text-emerald-500 transition-colors" />
               </Link>
-            ))}
+              
+              {menuItems.map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.path}
+                  className="flex items-center justify-between p-6 bg-zinc-900/30 border border-zinc-900 rounded-[2rem] hover:border-emerald-500/30 transition-all group active:scale-[0.98]"
+                >
+                  <div className="flex items-center space-x-5">
+                    <div className={`w-12 h-12 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-900 ${item.color} group-hover:border-emerald-500/20 transition-colors`}>
+                      <item.icon size={20} />
+                    </div>
+                    <div className="text-left space-y-0.5">
+                      <p className="text-xs font-black text-white uppercase italic tracking-wider leading-none">{item.label}</p>
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">{item.desc}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={18} className="text-zinc-800 group-hover:text-emerald-500 transition-colors" />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
