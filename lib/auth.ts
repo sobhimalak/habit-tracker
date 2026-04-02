@@ -20,56 +20,39 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
-        
+        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
         if (!user || !user.passwordHash) return null;
-        
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.passwordHash);
-        
-        if (!isPasswordValid) return null;
-        
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        if (!isValid) return null;
+        return { id: user.id, email: user.email, name: user.name };
       }
     })
   ],
-  session: { 
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/login" },
-  debug: process.env.NODE_ENV === "development",
+  debug: true,
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (process.env.NODE_ENV === "development") {
-        console.log("Auth SignIn Attempt:", { email: user.email, provider: account?.provider });
-      }
+    async signIn({ user, account }) {
+      console.log("Auth SignIn Attempt:", { email: user.email, provider: account?.provider });
       return true;
     },
-    async session({ session, token, user }) {
-      if (process.env.NODE_ENV === "development") {
-        console.log("Auth Session Callback:", { sub: token?.sub, userId: user?.id });
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        session.user.id = token.sub;
       }
-      if (session.user) {
-        session.user.id = (token?.sub as string) || (user?.id as string);
-      }
+      console.log("Auth Session:", { id: session?.user?.id, email: session?.user?.email });
       return session;
     },
-    async jwt({ token, user, account }) {
-      if (process.env.NODE_ENV === "development") {
-        console.log("Auth JWT Callback:", { userId: user?.id, existingSub: token.sub });
-      }
+    async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
       }
       return token;
     }
+  },
+  events: {
+    async linkAccount({ user }) { console.log("Auth: Linked Google Account to User", user.id); },
+    async createUser({ user }) { console.log("Auth: New User Created via OAuth", user.id); }
   }
 };
