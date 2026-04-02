@@ -54,11 +54,14 @@ export default function Login() {
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pt-8 pb-12 animate-slide-up max-w-md mx-auto w-full">
       <header className="flex flex-col items-center justify-center space-y-4 mb-8">
-        {/* Signature H Logo */}
+        <div className="w-20 h-20 bg-zinc-900 rounded-3xl p-4 shadow-2xl border border-white/5 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all duration-700" />
+          <img src="/icon-512x512.png" alt="Habitify" className="w-full h-full object-contain relative z-10 brightness-110" />
+        </div>
         
-        <div className="space-y-2 text-center">
-          <h1 className="text-4xl font-black tracking-tighter italic text-white">Habitify</h1>
-          <p className="text-zinc-500 font-bold text-sm uppercase tracking-widest pl-1">Level up your life</p>
+        <div className="space-y-1 text-center">
+          <h1 className="text-4xl font-black tracking-tighter italic text-white uppercase">Habitify</h1>
+          <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-1 italic">Level up your life</p>
         </div>
       </header>
 
@@ -142,8 +145,23 @@ export default function Login() {
               onClick={() => signIn("google")}
               className="w-full h-14 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl flex items-center justify-center space-x-3 active:scale-95 transition-all group hover:border-emerald-500/30"
             >
-              <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.152 1.152-2.904 2.384-6.192 2.384-5.352 0-9.624-4.344-9.624-9.696s4.272-9.696 9.624-9.696c2.88 0 5.112 1.128 6.648 2.568l2.328-2.328C19.144 1.48 16.2 0 12.48 0 5.672 0 0 5.672 0 12.48s5.672 12.48 12.48 12.48c3.704 0 6.648-1.216 8.744-3.416 2.136-2.126 2.808-5.112 2.808-7.552 0-.696-.056-1.352-.16-2.072h-11.41z"/>
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
               </svg>
               <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-white transition-colors">Continue with Google</span>
             </button>
