@@ -4,12 +4,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
 // GET a single habit (for the edit page)
-export async function GET(req: Request, context: any) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
-    const { id } = await context.params;
+    const { id } = params;
     const habit = await prisma.habit.findUnique({ where: { id } });
 
     if (!habit || habit.userId !== session.user.id) {
@@ -23,12 +23,12 @@ export async function GET(req: Request, context: any) {
 }
 
 // PATCH — update name, icon, color, or isActive
-export async function PATCH(req: Request, context: any) {
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
-    const { id } = await context.params;
+    const { id } = params;
     const body = await req.json();
 
     const habit = await prisma.habit.findUnique({ where: { id } });
@@ -53,12 +53,12 @@ export async function PATCH(req: Request, context: any) {
 }
 
 // DELETE a habit
-export async function DELETE(req: Request, context: any) {
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
-    const { id } = await context.params;
+    const { id } = params;
     const habit = await prisma.habit.findUnique({ where: { id } });
     if (!habit || habit.userId !== session.user.id) {
       return new NextResponse("Not Found / Unauthorized", { status: 404 });
