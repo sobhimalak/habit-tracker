@@ -53,15 +53,14 @@ export default function Login() {
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pt-8 pb-12 animate-slide-up max-w-md mx-auto w-full">
-      <header className="flex flex-col items-center justify-center space-y-4 mb-8">
-        <div className="w-20 h-20 bg-zinc-900 rounded-3xl p-4 shadow-2xl border border-white/5 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-emerald-500/10 blur-2xl group-hover:bg-emerald-500/20 transition-all duration-700" />
-          <img src="/icon-512x512.png" alt="Habitify" className="w-full h-full object-contain relative z-10 brightness-110" />
+      <header className="flex flex-col items-center justify-center space-y-4 mb-4">
+        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+          <span className="text-4xl font-black italic text-emerald-500">F</span>
         </div>
         
-        <div className="space-y-1 text-center">
-          <h1 className="text-4xl font-black tracking-tighter italic text-white uppercase">Forme Habits</h1>
-          <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-1 italic">Level up your life</p>
+        <div className="space-y-1 text-center font-black">
+          <h1 className="text-4xl tracking-tighter italic text-white uppercase">Forme Habits</h1>
+          <p className="text-zinc-500 font-bold text-xs uppercase tracking-widest pl-1 italic">Elevate Your Existence</p>
         </div>
       </header>
 
