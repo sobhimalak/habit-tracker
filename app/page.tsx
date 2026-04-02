@@ -56,7 +56,10 @@ export default async function Home() {
     };
   });
 
-  const activeChallenge = habits.find(h => h.challenges.length > 0)?.challenges[0];
+  const activeChallenge = habits
+    .filter(h => h.challenges.length > 0)
+    .flatMap(h => h.challenges)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
   // Dynamic progress based on actual activity
   const completedCount = activeChallenge ? await prisma.habitLog.count({
@@ -77,7 +80,7 @@ export default async function Home() {
         <div className="flex items-center justify-between w-full px-4 relative">
           <div className="w-10" /> {/* Spacer for symmetry */}
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 italic flex-1 text-center truncate px-2">
-            {activeChallenge?.title || "2022 Challenge"}
+            {activeChallenge?.title || "My Progress"}
           </h2>
           <div className="w-10 flex justify-end">
             <ShareButton title={`${displayDay} Days of Habitify`} />
