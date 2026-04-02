@@ -23,9 +23,15 @@ export default function NotificationHub() {
 
   const checkSubscription = async () => {
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
+      // Use getRegistration() instead of .ready to avoid blocking the UI
+      // If none exists, it's null (not subscribed)
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        const subscription = await registration.pushManager.getSubscription();
+        setIsSubscribed(!!subscription);
+      } else {
+        setIsSubscribed(false);
+      }
     } catch (err) {
       console.error("Error checking subscription:", err);
     }
@@ -94,8 +100,8 @@ export default function NotificationHub() {
   const unsubscribe = async () => {
     setLoading(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
+      const registration = await navigator.serviceWorker.getRegistration();
+      const subscription = await registration?.pushManager.getSubscription();
       if (subscription) {
         await subscription.unsubscribe();
         await fetch("/api/notifications/subscribe", {
