@@ -162,6 +162,10 @@ model HabitLogExercise {
   exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   order       Int      @default(0)
   completed   Boolean  @default(false)
+  sets        Int?
+  reps        Int?
+  weight      Float?
+  notes       String?
 
   @@index([logId])
 }

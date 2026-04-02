@@ -93,6 +93,26 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
  
       if (res.ok) {
         const updatedLog = await res.json();
+        
+        // Also save logged exercises data (sets, reps, etc.)
+        if (loggedExercises.length > 0) {
+          await fetch("/api/logs/exercises", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              logId: updatedLog.id,
+              exercisesData: loggedExercises.map(ex => ({
+                exerciseId: ex.id,
+                sets: ex.sets,
+                reps: ex.reps,
+                weight: ex.weight,
+                completed: ex.completed,
+                notes: ex.notes
+              }))
+            }),
+          });
+        }
+
         setHabits(habits.map(h => 
           h.id === habitId ? { ...h, todayLog: updatedLog } : h
         ));
@@ -269,14 +289,73 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                       </div>
 
                       {loggedExercises.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-3">
-                          {loggedExercises.map((ex, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-4 bg-zinc-900/30 border border-zinc-900 rounded-2xl">
-                              <div className="flex items-center space-x-3">
-                                <div className="text-[10px] font-black text-zinc-800 italic">0{idx + 1}</div>
-                                <p className="text-[10px] font-black text-white uppercase tracking-tight italic">{ex.name}</p>
+                        <div className="grid grid-cols-1 gap-4">
+                          {loggedExercises.map((ex: any, idx: number) => (
+                            <div key={idx} className="space-y-4 p-6 bg-zinc-900/40 border border-zinc-900/60 rounded-[2.5rem] hover:border-emerald-500/20 transition-all group">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-8 h-8 rounded-xl bg-zinc-950 border border-zinc-900 flex items-center justify-center text-[10px] font-black text-zinc-700 italic">0{idx + 1}</div>
+                                  <p className="text-xs font-black text-white uppercase tracking-tight italic">{ex.name}</p>
+                                </div>
+                                <button 
+                                  onClick={() => {
+                                    const updated = [...loggedExercises];
+                                    updated[idx].completed = !updated[idx].completed;
+                                    setLoggedExercises(updated);
+                                  }}
+                                  className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${ex.completed ? 'bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/20' : 'bg-zinc-950 border-zinc-800'}`}
+                                >
+                                  {ex.completed && <Check size={12} className="text-white" />}
+                                </button>
                               </div>
-                              <Check size={14} className="text-emerald-500/40" />
+
+                              <div className="grid grid-cols-3 gap-3">
+                                <div className="space-y-2">
+                                  <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest pl-2 italic">Sets</span>
+                                  <input 
+                                    type="number" 
+                                    className="w-full h-11 bg-zinc-950 border border-zinc-900 rounded-xl text-center text-white text-[10px] font-black focus:border-emerald-500/30 focus:outline-none transition-all placeholder:text-zinc-800"
+                                    value={ex.sets || ""}
+                                    onChange={(e) => {
+                                      const updated = [...loggedExercises];
+                                      updated[idx].sets = e.target.value;
+                                      setLoggedExercises(updated);
+                                    }}
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest pl-2 italic">Reps</span>
+                                  <input 
+                                    type="number" 
+                                    className="w-full h-11 bg-zinc-950 border border-zinc-900 rounded-xl text-center text-white text-[10px] font-black focus:border-emerald-500/30 focus:outline-none transition-all placeholder:text-zinc-800"
+                                    value={ex.reps || ""}
+                                    onChange={(e) => {
+                                      const updated = [...loggedExercises];
+                                      updated[idx].reps = e.target.value;
+                                      setLoggedExercises(updated);
+                                    }}
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest pl-2 italic">Weight</span>
+                                  <div className="relative">
+                                    <input 
+                                      type="number" 
+                                      className="w-full h-11 bg-zinc-950 border border-zinc-900 rounded-xl text-center text-white text-[10px] font-black focus:border-emerald-500/30 focus:outline-none transition-all pr-4 placeholder:text-zinc-800"
+                                      value={ex.weight || ""}
+                                      onChange={(e) => {
+                                        const updated = [...loggedExercises];
+                                        updated[idx].weight = e.target.value;
+                                        setLoggedExercises(updated);
+                                      }}
+                                      placeholder="0"
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[7px] font-black text-zinc-800">KG</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
