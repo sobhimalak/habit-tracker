@@ -73,8 +73,8 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 pb-32 animate-slide-up max-w-md mx-auto w-full">
-      <header className="pt-12 pb-8 flex flex-col items-center space-y-4 text-center shrink-0">
-        <div className="flex items-center justify-between w-full px-4 mb-4 relative">
+      <header className="pt-12 pb-8 flex flex-col items-center text-center shrink-0">
+        <div className="flex items-center justify-between w-full px-4 relative">
           <div className="w-10" /> {/* Spacer for symmetry */}
           <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 italic flex-1 text-center truncate px-2">
             {activeChallenge?.title || "2022 Challenge"}
@@ -89,7 +89,7 @@ export default async function Home() {
           <p className="text-zinc-500 font-bold text-sm tracking-wide uppercase">of {totalDays} Days</p>
         </div>
 
-        <div className="w-full max-w-sm pt-4">
+        <div className="w-full max-w-sm pt-8">
           <div className="h-1.5 bg-zinc-900 rounded-full overflow-hidden">
             <div
               className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all duration-1000 ease-out"
