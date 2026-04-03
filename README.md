@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forme Habits: Training Ecosystem
 
-## Getting Started
+Premium Strength & Conditioning Tracker with Automated Habits & Real-time Gains Visualization.
 
-First, run the development server:
+## 🚀 Getting Started
+
+1.  **Environment Setup**: Ensure your `.env` is configured (see `deployment_guide.md`).
+2.  **Install Dependencies**: `npm install`
+3.  **Database Migration**: `npx prisma db push`
+4.  **Launch Dashboard**: `npm run dev`
+
+---
+
+## 🔔 The Signal (Reminders)
+
+**Forme Habits** uses a secure signal dispatcher to keep you consistent. 
+
+### **Automated (Production)**
+The app is configured via `vercel.json` to automatically check for reminders every **1 minute**. 
+-   **Status**: Active on Vercel after deployment.
+
+### **Manual Trigger (Testing)**
+If you want to trigger a reminder **right now** to test your setup, run this command in your terminal:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+curl "http://localhost:3000/api/notifications/send?secret=habit-tracker12345"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*Note: Replace `localhost:3000` with your Vercel URL when testing live!*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📈 Evolution (Statistics)
+Your progress is tracked via the **Tonnage Engine**. 
+-   **Volume**: Sets x Reps x Weight.
+-   **Tonnage Progress**: Compare this week's total moved weight vs last week.
+-   **Consistency**: Branded streaks based on your completion logs.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠 Tech Stack
+-   **Core**: Next.js 13.5 (App Router), TypeScript.
+-   **Auth**: NextAuth.js (Google & Credentials).
+-   **Database**: Prisma ORM with PostgreSQL.
+-   **Aesthetics**: Glassmorphism, Tailwind CSS, Obsidian UI.
+-   **Signals**: Web Push API & Vercel Crons.
