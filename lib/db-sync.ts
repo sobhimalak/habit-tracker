@@ -19,6 +19,7 @@ export async function syncExercisesToDB() {
         update: {
           name: ex.name,
           muscleGroup: ex.muscleGroup,
+          secondaryMuscles: ex.secondaryMuscles || [],
           equipment: ex.equipment,
           instructions: ex.instructions,
           isCustom: false,
@@ -27,6 +28,7 @@ export async function syncExercisesToDB() {
           id: stableId,
           name: ex.name,
           muscleGroup: ex.muscleGroup,
+          secondaryMuscles: ex.secondaryMuscles || [],
           equipment: ex.equipment,
           instructions: ex.instructions,
           isCustom: false,

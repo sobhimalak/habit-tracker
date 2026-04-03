@@ -8,19 +8,18 @@ interface ShareButtonProps {
 
 export default function ShareButton({ title }: ShareButtonProps) {
   const handleShare = async () => {
+    const shareUrl = window.location.origin;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: title || "Forme Habits Premium",
-          text: "Check out my progress on Forme Habits!",
-          url: window.location.origin,
+          url: shareUrl,
         });
       } catch (err) {
         console.error("Error sharing:", err);
       }
     } else {
       // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.origin);
+      navigator.clipboard.writeText(shareUrl);
       alert("Link copied to clipboard!");
     }
   };
