@@ -12,6 +12,8 @@ export default function AddHabit() {
   const [challengeGoal, setChallengeGoal] = useState("30");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderTime, setReminderTime] = useState("08:30");
 
   const SUGGESTED_ICONS = ["✨", "🏃", "💧", "📖", "🧘", "💪", "🍎", "💤", "💻", "🎵", "💰", "🎨"];
   const ICONS = ["✨", "🏃", "🥗", "📚", "🧘", "💧", "💪", "🍎", "🚶", "🥛", "🍳"];
@@ -32,6 +34,7 @@ export default function AddHabit() {
         type: isChallenge ? "challenge" : "daily",
         isChallenge,
         challengeGoal,
+        reminderTime: showReminder ? reminderTime : null,
       }),
     });
 
@@ -102,6 +105,37 @@ export default function AddHabit() {
               ))}
             </div>
           </div>
+        </div>
+        <div className="space-y-6 pt-4 border-t border-zinc-900">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Alert Schedule</label>
+              <p className="text-[10px] text-zinc-500 italic pl-1">Receive a signal at your peak time</p>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setShowReminder(!showReminder)}
+              className={`w-12 h-6 rounded-full transition-all relative ${showReminder ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${showReminder ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+ 
+          {showReminder && (
+            <div className="space-y-4 animate-slide-up">
+              <div className="relative group">
+                <input
+                  type="time"
+                  value={reminderTime}
+                  onChange={(e) => setReminderTime(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500 transition-all text-white font-black text-xl italic text-center appearance-none"
+                />
+                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500/40 pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+                  <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="space-y-6 pt-4 border-t border-zinc-900">
           <div className="flex items-center justify-between">

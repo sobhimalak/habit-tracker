@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) return new NextResponse("Unauthorized", { status: 401 });
 
-    const { name, icon, color, type, isChallenge, challengeGoal, challengeStart } = await req.json();
+    const { name, icon, color, type, isChallenge, challengeGoal, challengeStart, reminderTime } = await req.json();
 
     const habit = await prisma.habit.create({
       data: {
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
         icon,
         color,
         type: type || "daily",
+        reminderTime,
       }
     });
 
