@@ -8,8 +8,12 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-zinc-950 px-8 py-20 animate-slide-up max-w-md mx-auto w-full items-center justify-center text-center space-y-12">
       {/* Brand Header */}
       <div className="space-y-4">
-        <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20 shadow-2xl shadow-emerald-500/10 mx-auto mb-8">
-          <span className="text-5xl font-black italic text-emerald-500">F</span>
+        <div className="w-32 h-32 bg-emerald-500/5 rounded-[3rem] flex items-center justify-center border border-emerald-500/10 shadow-3xl shadow-emerald-500/5 mx-auto mb-10 overflow-hidden group">
+          <img 
+            src="/logo.png" 
+            alt="Forme Habits" 
+            className="w-20 h-20 active:scale-110 transition-transform duration-700 ease-out" 
+          />
         </div>
         <h1 className="text-6xl font-black tracking-tighter italic text-white uppercase leading-none">
           Forme<br />Habits

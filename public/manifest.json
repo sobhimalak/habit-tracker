@@ -1,33 +1,26 @@
 {
   "name": "Forme Habits",
   "short_name": "Forme",
-  "description": "A premium mobile-first habit tracker for high-performers",
+  "description": "Premium Strength & Conditioning Tracker",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",
-  "theme_color": "#09090b",
-  "orientation": "portrait",
-  "scope": "/",
+  "theme_color": "#10b981",
   "icons": [
     {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "/icon-512x512.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ],
-  "categories": ["productivity", "lifestyle"],
-  "shortcuts": [
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
     {
-      "name": "Add Habit",
-      "url": "/add",
-      "description": "Quickly add a new habit"
+      "src": "/logo_full.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
     }
   ]
 }

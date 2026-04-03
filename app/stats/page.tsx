@@ -157,7 +157,11 @@ export default async function StatsPage() {
             </div>
           </div>
           <div className="premium-card bg-[#111113] p-6 flex flex-col space-y-4 shadow-2xl shadow-black/40">
-            <Dumbbell className="text-rose-500" size={20} />
+            <img 
+              src="/logo.png" 
+              alt="Workouts" 
+              className="w-5 h-5 grayscale opacity-80" 
+            />
             <div className="space-y-1">
               <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Workouts</p>
               <h4 className="text-xl font-black italic text-white uppercase">{daysWithWorkouts}</h4>
