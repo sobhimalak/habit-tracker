@@ -28,7 +28,7 @@ export default async function StatsPage() {
   // 2. Weekly Activity
   const startOfThisWeek = startOfWeek(today);
   const startOfLastWeek = startOfWeek(subDays(startOfThisWeek, 1));
-  
+
   const daysOfThisWeek = eachDayOfInterval({
     start: startOfThisWeek,
     end: endOfWeek(today)
@@ -64,10 +64,10 @@ export default async function StatsPage() {
   // Weekly Volume Comparison
   const thisWeekExercises = loggedExercises.filter((le: any) => le.createdAt >= startOfThisWeek);
   const lastWeekExercises = loggedExercises.filter((le: any) => le.createdAt >= startOfLastWeek && le.createdAt < startOfThisWeek);
-  
+
   const thisWeekVol = thisWeekExercises.reduce((acc: number, le: any) => acc + ((le.sets || 0) * (le.reps || 0) * (le.weight || 0)), 0);
   const lastWeekVol = lastWeekExercises.reduce((acc: number, le: any) => acc + ((le.sets || 0) * (le.reps || 0) * (le.weight || 0)), 0);
-  
+
   const volumeGrowth = lastWeekVol > 0 ? Math.round(((thisWeekVol - lastWeekVol) / lastWeekVol) * 100) : 0;
 
   // 4. Muscle Focus
@@ -105,7 +105,7 @@ export default async function StatsPage() {
   const circumference = 2 * Math.PI * 110;
   const consistencyCirc = 2 * Math.PI * 85;
   const fitnessCirc = 2 * Math.PI * 60;
-  
+
   const daysWithWorkouts = new Set(loggedExercises.map((le: any) => le.logId)).size;
   const fitnessConsistency = Math.min(100, (daysWithWorkouts / 30) * 100);
 
@@ -118,7 +118,7 @@ export default async function StatsPage() {
         <h1 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 italic">Evolution</h1>
         <div className="w-7" />
       </header>
- 
+
       <main className="flex-1 space-y-16">
         {/* Consistency Aura */}
         <div className="space-y-4 text-center">
@@ -157,11 +157,7 @@ export default async function StatsPage() {
             </div>
           </div>
           <div className="premium-card bg-[#111113] p-6 flex flex-col space-y-4 shadow-2xl shadow-black/40">
-            <img 
-              src="/logo.png" 
-              alt="Workouts" 
-              className="w-5 h-5 grayscale opacity-80" 
-            />
+            <Dumbbell className="text-rose-500" size={20} />
             <div className="space-y-1">
               <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Workouts</p>
               <h4 className="text-xl font-black italic text-white uppercase">{daysWithWorkouts}</h4>
@@ -187,7 +183,7 @@ export default async function StatsPage() {
                   <span className="text-zinc-700">{muscle.count} logged</span>
                 </div>
                 <div className="h-1.5 bg-zinc-950 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000"
                     style={{ width: `${Math.max(5, muscle.percentage)}%` }}
                   />
@@ -199,23 +195,23 @@ export default async function StatsPage() {
 
         {/* Activity Stream */}
         <div className="premium-card bg-[#111113] p-8 space-y-8 shadow-2xl shadow-black/40">
-           <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black uppercase tracking-widest text-white italic">Activity Stream</h3>
-              <Calendar className="text-zinc-700" size={16} />
-           </div>
-           <div className="flex justify-between items-end h-32 px-2 gap-4">
-              {weeklyActivity.map((h, i) => (
-                 <div key={i} className="flex-1 bg-zinc-950 rounded-xl relative group h-full overflow-hidden">
-                    <div 
-                       className="absolute bottom-0 left-0 w-full bg-emerald-500 shadow-lg shadow-emerald-500/10 transition-all duration-500 hover:bg-emerald-400" 
-                       style={{ height: `${Math.max(2, h)}%` }}
-                    />
-                 </div>
-              ))}
-           </div>
-           <div className="flex justify-between text-[8px] font-black text-zinc-800 uppercase tracking-widest px-2 italic">
-              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-           </div>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black uppercase tracking-widest text-white italic">Activity Stream</h3>
+            <Calendar className="text-zinc-700" size={16} />
+          </div>
+          <div className="flex justify-between items-end h-32 px-2 gap-4">
+            {weeklyActivity.map((h, i) => (
+              <div key={i} className="flex-1 bg-zinc-950 rounded-xl relative group h-full overflow-hidden">
+                <div
+                  className="absolute bottom-0 left-0 w-full bg-emerald-500 shadow-lg shadow-emerald-500/10 transition-all duration-500 hover:bg-emerald-400"
+                  style={{ height: `${Math.max(2, h)}%` }}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between text-[8px] font-black text-zinc-800 uppercase tracking-widest px-2 italic">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
         </div>
       </main>
     </div>
