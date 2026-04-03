@@ -16,14 +16,14 @@ export default async function HabitsPage() {
   const rawHabits = await prisma.habit.findMany({
     where: {
       userId: session.user.id,
-      isActive: true
     },
     include: {
       logs: {
         where: { completed: true },
         take: 100 // for streak calculation
       }
-    }
+    },
+    orderBy: { createdAt: 'desc' }
   });
 
   const habits = (rawHabits as any[]).map(h => ({
@@ -33,7 +33,8 @@ export default async function HabitsPage() {
     goalValue: h.goalValue || 1,
     goalUnit: h.goalUnit || "times",
     reminderTime: h.reminderTime || undefined,
-    icon: h.icon || "✨"
+    icon: h.icon || "✨",
+    isActive: h.isActive
   }));
 
   return (

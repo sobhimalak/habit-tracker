@@ -2,7 +2,8 @@
  
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle, Dumbbell, Plus } from "lucide-react";
+import { Check, X, ChevronRight, ChevronLeft, Zap, Target, Clock, AlertCircle, Dumbbell, Plus, Edit2 } from "lucide-react";
+import Link from "next/link";
 import WorkoutSelector from "./WorkoutSelector";
  
 type Habit = {
@@ -181,6 +182,13 @@ export default function HabitListClient({ habits: initialHabits, dateStr }: Habi
                 >
                   <ChevronRight size={18} />
                 </button>
+ 
+                <Link
+                  href={`/habits/edit/${habit.id}`}
+                  className="w-8 h-8 flex items-center justify-center text-zinc-700 hover:text-emerald-500 transition-colors shrink-0 ml-1"
+                >
+                  <Edit2 size={16} />
+                </Link>
               </div>
               {/* Bottom row: REST + MISS + DONE */}
               <div className="flex gap-2 mt-3">

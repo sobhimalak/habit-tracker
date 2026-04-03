@@ -47,6 +47,41 @@ export default function AddHabit() {
     setLoading(false);
   };
 
+  const handleToggleReminder = async () => {
+    if (!showReminder) {
+      // Logic for enabling
+      if ("Notification" in window) {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          setError("Notification permission is required for alerts.");
+          return;
+        }
+ 
+        // Register SW and get subscription if possible
+        if ("serviceWorker" in navigator) {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+            if (!subscription) {
+              // Try to subscribe (we'll need the public key)
+              const pubKeyRes = await fetch("/api/notifications/vapid-public-key");
+              if (pubKeyRes.ok) {
+                const { publicKey } = await pubKeyRes.json();
+                await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: publicKey
+                });
+              }
+            }
+          } catch (err) {
+            console.error("SW/Subscription error:", err);
+          }
+        }
+      }
+    }
+    setShowReminder(!showReminder);
+  };
+ 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col min-h-screen bg-zinc-950 px-8 py-12 animate-slide-up max-w-md mx-auto w-full">
       <header className="flex items-center justify-between mb-16">
@@ -56,7 +91,7 @@ export default function AddHabit() {
         <h1 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500 italic">Create Habit</h1>
         <div className="w-7" />
       </header>
-
+ 
       <main className="flex-1 space-y-12">
         <div className="space-y-4">
           <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Habit Name</label>
@@ -69,7 +104,7 @@ export default function AddHabit() {
             autoFocus
           />
         </div>
-
+ 
         <div className="space-y-4 pt-4 border-t border-zinc-900">
           <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Icon & Color</label>
           <div className="space-y-6">
@@ -114,7 +149,7 @@ export default function AddHabit() {
             </div>
             <button 
               type="button" 
-              onClick={() => setShowReminder(!showReminder)}
+              onClick={handleToggleReminder}
               className={`w-12 h-6 rounded-full transition-all relative ${showReminder ? 'bg-emerald-500' : 'bg-zinc-800'}`}
             >
               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${showReminder ? 'left-7' : 'left-1'}`} />

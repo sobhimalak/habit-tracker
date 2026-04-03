@@ -44,6 +44,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         ...(body.icon      !== undefined && { icon:     body.icon }),
         ...(body.color     !== undefined && { color:    body.color }),
         ...(body.isActive  !== undefined && { isActive: body.isActive }),
+        ...(body.reminderTime !== undefined && { reminderTime: body.reminderTime }),
       },
     });
 

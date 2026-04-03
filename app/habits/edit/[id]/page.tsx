@@ -13,6 +13,8 @@ export default function EditHabit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showReminder, setShowReminder] = useState(false);
+  const [reminderTime, setReminderTime] = useState("08:30");
 
   const ICONS  = ["✨", "🏃", "💧", "📖", "🧘", "💪", "🍎", "💤", "💻", "🎵", "💰", "🎨"];
   const COLORS = ["#71717a", "#ef4444", "#f43f5e", "#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#06b6d4"];
@@ -25,6 +27,10 @@ export default function EditHabit() {
         setName(data.name   ?? "");
         setIcon(data.icon   ?? "✨");
         setColor(data.color ?? "#10b981");
+        if (data.reminderTime) {
+          setShowReminder(true);
+          setReminderTime(data.reminderTime);
+        }
       } else {
         setError("Failed to load habit.");
       }
@@ -40,9 +46,14 @@ export default function EditHabit() {
     const res = await fetch(`/api/habits/${params.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), icon, color }),
+      body: JSON.stringify({ 
+        name: name.trim(), 
+        icon, 
+        color,
+        reminderTime: showReminder ? reminderTime : null
+      }),
     });
-
+ 
     if (res.ok) {
       router.push("/habits");
       router.refresh();
@@ -51,13 +62,45 @@ export default function EditHabit() {
     }
     setSaving(false);
   };
-
+ 
+  const handleToggleReminder = async () => {
+    if (!showReminder) {
+      if ("Notification" in window) {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          setError("Notification permission is required for alerts.");
+          return;
+        }
+ 
+        if ("serviceWorker" in navigator) {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+            if (!subscription) {
+              const pubKeyRes = await fetch("/api/notifications/vapid-public-key");
+              if (pubKeyRes.ok) {
+                const { publicKey } = await pubKeyRes.json();
+                await registration.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: publicKey
+                });
+              }
+            }
+          } catch (err) {
+            console.error("SW/Subscription error:", err);
+          }
+        }
+      }
+    }
+    setShowReminder(!showReminder);
+  };
+ 
   if (loading) return (
     <div className="h-screen flex items-center justify-center bg-zinc-950 text-zinc-500 font-black italic text-xs uppercase tracking-widest">
       Loading...
     </div>
   );
-
+ 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col min-h-screen bg-zinc-950 px-8 py-12 animate-slide-up max-w-md mx-auto w-full">
       <header className="flex items-center justify-between mb-12">
@@ -126,6 +169,39 @@ export default function EditHabit() {
           </div>
         </div>
 
+        {/* Alert Schedule */}
+        <div className="space-y-6 pt-4 border-t border-zinc-900">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] ml-1">Alert Schedule</label>
+              <p className="text-[10px] text-zinc-500 italic pl-1">Receive a signal at your peak time</p>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setShowReminder(!showReminder)}
+              className={`w-12 h-6 rounded-full transition-all relative ${showReminder ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${showReminder ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+ 
+          {showReminder && (
+            <div className="space-y-4 animate-slide-up">
+              <div className="relative group">
+                <input
+                  type="time"
+                  value={reminderTime}
+                  onChange={(e) => setReminderTime(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-4 focus:outline-none focus:border-emerald-500 transition-all text-white font-black text-xl italic text-center appearance-none"
+                />
+                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-500/40 pointer-events-none group-focus-within:text-emerald-500 transition-colors">
+                  <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+ 
         {error && <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest italic">{error}</p>}
       </main>
 

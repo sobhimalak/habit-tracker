@@ -25,6 +25,8 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const secret = searchParams.get("secret");
+    const debug = searchParams.get("debug") === "true";
+    const timeOverride = searchParams.get("time");
 
     // Simple security check for cron/automation
     if (secret !== process.env.NEXTAUTH_SECRET) {
@@ -39,26 +41,38 @@ export async function GET(req: Request) {
     const now = new Date();
     const currentHour = now.getHours().toString().padStart(2, '0');
     const currentMinute = now.getMinutes().toString().padStart(2, '0');
-    const currentTime = `${currentHour}:${currentMinute}`;
+    const currentTime = timeOverride || `${currentHour}:${currentMinute}`;
 
-    console.log(`Checking for reminders at ${currentTime}...`);
+    console.log(`Checking for reminders at ${currentTime} (Debug: ${debug})...`);
 
-    // Find all habits that have a reminder at this time
-    const habitsToRemind = await prisma.habit.findMany({
-      where: {
-        reminderTime: currentTime,
-        isActive: true,
-      },
-      include: {
-        user: {
-          include: {
-            pushSubscriptions: true
+    let habitsToRemind: any[] = [];
+
+    if (debug) {
+      // In debug mode, find up to 5 habits to test
+      habitsToRemind = await prisma.habit.findMany({
+        take: 5,
+        include: {
+          user: { include: { pushSubscriptions: true } }
+        }
+      }) as any[];
+    } else {
+      // Standard time-based lookup
+      habitsToRemind = await prisma.habit.findMany({
+        where: {
+          reminderTime: currentTime,
+          isActive: true,
+        },
+        include: {
+          user: {
+            include: {
+              pushSubscriptions: true
+            }
           }
         }
-      }
-    }) as any[];
+      }) as any[];
+    }
 
-    console.log(`Found ${habitsToRemind.length} habits with reminders.`);
+    console.log(`Found ${habitsToRemind.length} habits to process.`);
 
     const results = [];
 
@@ -67,10 +81,10 @@ export async function GET(req: Request) {
 
       for (const sub of subscriptions) {
         const payload = JSON.stringify({
-          title: `Time for ${habit.name}!`,
-          body: `Don't break your streak! Reach your goal of ${habit.goalValue || 1} ${habit.goalUnit || 'times'} today.`,
-          icon: "/icon-192x192.png",
-          badge: "/badge-72x72.png",
+          title: debug ? `[TEST] Signal for ${habit.name}` : `Time for ${habit.name}!`,
+          body: debug ? "System diagnostic signal: Branded alerts are fully operational." : `Don't break your streak! Reach your goal of ${habit.goalValue || 1} ${habit.goalUnit || 'times'} today.`,
+          icon: "/logo.png",
+          badge: "/logo.png",
           data: {
             url: `/`
           }
@@ -95,7 +109,12 @@ export async function GET(req: Request) {
       }
     }
 
-    return NextResponse.json({ processed: habitsToRemind.length, results });
+    return NextResponse.json({ 
+      serverTime: `${currentHour}:${currentMinute}`,
+      checkingTime: currentTime,
+      processed: habitsToRemind.length, 
+      results 
+    });
   } catch (error) {
     console.error("Error sending notifications:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

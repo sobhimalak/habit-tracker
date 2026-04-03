@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Habits",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   themeColor: "#09090b",
 };
 
