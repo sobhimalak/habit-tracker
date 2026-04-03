@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Bell, BellOff, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
+// Access VAPID public key with a safety check
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
 export default function NotificationHub() {
@@ -54,7 +55,7 @@ export default function NotificationHub() {
     setError(null);
     try {
       if (!VAPID_PUBLIC_KEY) {
-        throw new Error("VAPID Key missing");
+        throw new Error("Security Keys missing. Please add NEXT_PUBLIC_VAPID_PUBLIC_KEY to Vercel.");
       }
 
       const result = await Notification.requestPermission();
@@ -162,8 +163,8 @@ export default function NotificationHub() {
       )}
 
       {isSubscribed && !error && (
-        <div className="flex items-center space-x-2 px-6">
-          <CheckCircle2 size={12} className="text-emerald-500" />
+        <div className="flex items-center space-x-2 px-6 animate-fade-in">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <p className="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest italic">Signal Linked</p>
         </div>
       )}
